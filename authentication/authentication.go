@@ -17,14 +17,10 @@ const (
 	sqlselect = `select password from users where username = $1`
 )
 
-type UserLogin struct {
-	AccessToken string `json:"access_token"`
-}
-
 func Login(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
-
+	fmt.Println(r.Header)
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
@@ -45,13 +41,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := function.CreateToken(username)
+	token, rt, err := function.CreateToken(username)
 	if err != nil {
 		panic(err)
 	}
 
-	item := &UserLogin{
-		AccessToken: token,
+	item := &responses.UserLogin{
+		AccessToken:  token,
+		RefreshToken: rt,
 	}
 
 	responses.SendResponse(w, err, item, nil)

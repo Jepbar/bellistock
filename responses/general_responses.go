@@ -19,6 +19,61 @@ type ResponseErrorCodeAndMessage struct {
 	ErrorCode    string  `json:"error_code"`
 	ErrorMessage *string `json:"error_msg,omitempty"`
 }
+type Users struct {
+	Userid     int    `json:"userid"`
+	Username   string `json:"username"`
+	Email      string `json:"email"`
+	Role       string `json:"role"`
+	SowalgaTmt int    `json:"sowalga_tmt"`
+	SowalgaUsd int    `json:"sowalga_usd"`
+}
+
+type Customers struct {
+	Customerid    int    `json:"customerid"`
+	Name          string `json:"name"`
+	GirdeyjisiTmt int    `json:"girdeyjisi_tmt"`
+	GirdeyjisiUsd int    `json:"girdeyjisi_usd"`
+}
+
+type Stores1 struct {
+	Storeid    int    `json:"store_id"`
+	Name       string `json:"store_name"`
+	OverallTmt int    `json:"overall_tmt"`
+	OverallUsd int    `json:"overall_usd"`
+	OwnTmt     int    `json:"own_tmt"`
+	OwnUsd     int    `json:"own_usd"`
+}
+
+type Stores struct {
+	Storeid    int        `json:"store_id"`
+	Name       string     `json:"store_name"`
+	OverallTmt int        `json:"overall_tmt"`
+	OverallUsd int        `json:"overall_usd"`
+	OwnTmt     int        `json:"own_tmt"`
+	OwnUsd     int        `json:"own_usd"`
+	Childs     []*Stores1 `json:"childs"`
+}
+
+type LastActions struct {
+	User    string `json:"done_by"`
+	Action  string `json:"action"`
+	Message string `json:"message"`
+}
+
+type UserLogin struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
+type BetweenStores struct {
+	Id                 int    `json:"id"`
+	UserID             int    `json:"user_id"`
+	FromStoreName      string `json:"from_store_name"`
+	ToStoreName        string `json:"to_store_name"`
+	TypeOfAccount      string `json:"type_of_account"`
+	Currency           string `json:"currency"`
+	TotalPaymentAmount int    `json:"total_payment_amount"`
+}
 
 const (
 	ErrorCodeOK                  int = 200

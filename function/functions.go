@@ -60,7 +60,7 @@ func Ascii(x string) bool {
 
 }
 
-func CreateToken(username string) (string, error) {
+func CreateToken(username string) (string, string, error) {
 	var err error
 	//Creating Access Token
 	os.Setenv("ACCESS_SECRET", "jdnfksdmfksd") //this should be in an env file
@@ -71,9 +71,18 @@ func CreateToken(username string) (string, error) {
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	token, err := at.SignedString([]byte(os.Getenv("ACCESS_SECRET")))
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	return token, nil
+
+	refreshToken := jwt.New(jwt.SigningMethodHS256)
+	rtClaims := refreshToken.Claims.(jwt.MapClaims)
+	rtClaims["sub"] = 1
+	rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+	rt, err := refreshToken.SignedString([]byte("secret"))
+	if err != nil {
+		return "", "", err
+	}
+	return token, rt, nil
 }
 
 func ExtractToken(r *http.Request) string {
@@ -115,10 +124,12 @@ func TokenData(r *http.Request) string {
 
 	tokenString := ExtractToken(r)
 	claims := jwt.MapClaims{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+	token, _ := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte("jdnfksdmfksd"), nil
 	})
-	fmt.Println(token, err)
+	if token == nil {
+		fmt.Println("Hello")
+	}
 
 	username := fmt.Sprintf("%v", claims["username"])
 

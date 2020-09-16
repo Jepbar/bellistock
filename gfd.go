@@ -21,7 +21,12 @@ func main() {
 	r.HandleFunc("/createcategorie", creations.CreateCategorie)
 	r.HandleFunc("/getusers", givingresponse.GetUsers)
 	r.HandleFunc("/getstores", givingresponse.GetStores)
+	r.HandleFunc("/gettransferstores", givingresponse.GetTransferBetweenStores)
+	r.HandleFunc("/getlastactions", givingresponse.GetLastActions)
+	r.HandleFunc("/getcustomers", givingresponse.GetCustomers)
+	r.HandleFunc("/createworker", creations.CreateWorker)
+	r.HandleFunc("/givemoney", money.GiveMoneyToUser)
 
 	http.Handle("/", r)
-	http.ListenAndServe("192.168.1.48:8080", nil)
+	http.ListenAndServe("192.168.1.140:8000", nil)
 }

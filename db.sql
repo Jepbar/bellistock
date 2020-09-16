@@ -6,7 +6,8 @@ CREATE TABLE users(
     password    VARCHAR(100)    NOT NULL UNIQUE,
     email       VARCHAR(100)    NOT NULL,
     role        VARCHAR(100)    NOT NULL,
-    sowalgasy   INT             NOT NULL
+    sowalga_tmt   INT           DEFAULT 0  NOT NULL,
+    sowalga_usd   INT           DEFAULT 0  NOT NULL
 );
 
 
@@ -78,6 +79,7 @@ CREATE TABLE transfers_between_stores(
     user_id                INT                    NOT NULL,
     from_store_name        VARCHAR(100)           NOT NULL,
     to_store_name          VARCHAR(100)           NOT NULL,
+    type_of_account        VARCHAR(100)           NOT NULL,
     currency               VARCHAR(100)           NOT NULL,
     total_payment_amount   INT                    NOT NULL,
     note                   VARCHAR(255),

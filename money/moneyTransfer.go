@@ -8,28 +8,33 @@ import (
 	"stock/function"
 	"strconv"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/jackc/pgx"
 )
 
 const (
-	sqlInsert2  = `insert into money_transfers(store_id, type_of_transfer, type_of_account, currency, categorie_id, customer_id,project, type_of_income_payment, total_payment_amount,user_id) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning id`
-	sqlUpdate   = `update stores set jemi_hasap_tmt = jemi_hasap_tmt + $1 , shahsy_hasap_tmt = shahsy_hasap_tmt + $2 where store_id = $3 returning name`
-	sqlUpdate2  = `update stores set jemi_hasap_usd = jemi_hasap_usd + $1 , shahsy_hasap_usd = shahsy_hasap_usd + $2 where store_id = $3 returning name`
-	sqlUpdate3  = `update stores set jemi_hasap_tmt = jemi_hasap_tmt - $1 , shahsy_hasap_tmt = shahsy_hasap_tmt - $2 where shahsy_hasap_tmt > $2 and store_id = $3 returning name`
-	sqlUpdate4  = `update stores set jemi_hasap_usd = jemi_hasap_usd - $1 , shahsy_hasap_usd = shahsy_hasap_usd - $2 where shahsy_hasap_usd > $2 and store_id = $3 returning name`
-	sqlUpdate5  = `update stores set jemi_hasap_tmt = jemi_hasap_tmt + $1  where store_id = $2 returning name`
-	sqlUpdate6  = `update stores set jemi_hasap_usd = jemi_hasap_usd + $1  where store_id = $2 returning name`
-	sqlUpdate7  = `update stores set jemi_hasap_tmt = jemi_hasap_tmt - $1  where store_id = $2 returning name`
-	sqlUpdate8  = `update stores set jemi_hasap_usd = jemi_hasap_usd - $1  where store_id = $2 returning name`
-	sqlparent   = `select parent_store_id from stores where store_id = $1`
-	sqlInsert3  = `insert into transfers_between_stores(user_id, from_store_name, to_store_name, total_payment_amount, currency, note) values($1 ,$2 ,$3 ,$4, $5, $6) returning id`
-	sqlselectid = `select store_id from stores where name = $1`
-	sqlInsert4  = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || $4 || $5 || $6 || $7) returning id`
-	sqlInsert5  = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' dukanyndan ' || $4 || ' dukanyna '|| $5 || $6 || ' gecirdi') returning id`
-	sqlSelectID = `select user_id from users where username = $1`
-	sqlUpdate9  = `update customers set girdeyjisi_tmt = girdeyjisi_tmt + $1 where customer_id = $2 returning name`
-	sqlUpdate10 = `update customers set girdeyjisi_usd = girdeyjisi_usd + $1 where customer_id = $2 returning name`
+	sqlInsert2        = `insert into money_transfers(store_id, type_of_transfer, type_of_account, currency, categorie_id, customer_id,project, type_of_income_payment, total_payment_amount,user_id) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning id`
+	sqlUpdate         = `update stores set jemi_hasap_tmt = jemi_hasap_tmt + $1 , shahsy_hasap_tmt = shahsy_hasap_tmt + $2 where store_id = $3 returning name`
+	sqlUpdate2        = `update stores set jemi_hasap_usd = jemi_hasap_usd + $1 , shahsy_hasap_usd = shahsy_hasap_usd + $2 where store_id = $3 returning name`
+	sqlUpdate3        = `update stores set jemi_hasap_tmt = jemi_hasap_tmt - $1 , shahsy_hasap_tmt = shahsy_hasap_tmt - $2 where shahsy_hasap_tmt >= $2 and store_id = $3 returning name`
+	sqlUpdate4        = `update stores set jemi_hasap_usd = jemi_hasap_usd - $1 , shahsy_hasap_usd = shahsy_hasap_usd - $2 where shahsy_hasap_usd >= $2 and store_id = $3 returning name`
+	sqlUpdate5        = `update stores set jemi_hasap_tmt = jemi_hasap_tmt + $1  where store_id = $2 returning name`
+	sqlUpdate6        = `update stores set jemi_hasap_usd = jemi_hasap_usd + $1  where store_id = $2 returning name`
+	sqlUpdate7        = `update stores set jemi_hasap_tmt = jemi_hasap_tmt - $1  where store_id = $2 returning name`
+	sqlUpdate8        = `update stores set jemi_hasap_usd = jemi_hasap_usd - $1  where store_id = $2 returning name`
+	sqlparent         = `select parent_store_id from stores where store_id = $1`
+	sqlInsert3        = `insert into transfers_between_stores(user_id, from_store_name, to_store_name, total_payment_amount, currency,type_of_account, note) values($1 ,$2 ,$3 ,$4, $5, $6, $7) returning id`
+	sqlselectid       = `select store_id from stores where name = $1`
+	sqlInsert4        = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || $4 || $5 || $6 || $7) returning id`
+	sqlInsert5        = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' dukanyndan ' || $4 || ' dukanyna '|| $5 || $6 || ' gecirdi') returning id`
+	sqlSelectID       = `select user_id from users where username = $1`
+	sqlUpdate9        = `update customers set girdeyjisi_tmt = girdeyjisi_tmt + $1 where customer_id = $2 returning name`
+	sqlUpdate10       = `update customers set girdeyjisi_usd = girdeyjisi_usd + $1 where customer_id = $2 returning name`
+	sqlselectSowalga  = `select sowalga_tmt, sowalga_usd from users where user_id = $1`
+	sqlUpdateSowalga  = `update users set sowalga_tmt = sowalga_tmt - $1 where user_id = $2`
+	sqlUpdateSowalga2 = `update users set sowalga_usd = sowalga_usd - $1 where user_id = $2`
+	sqlUpdateSowalga3 = `update users set sowalga_tmt = sowalga_tmt + $1 where user_id = $2`
+	sqlUpdateSowalga4 = `update users set sowalga_usd = sowalga_usd + $1 where user_id = $2`
+	sqlInsertMessage  = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' usere '|| $4 || $5 || ' sowalga berdi')`
 )
 
 func IDOfStore(x string) int {
@@ -87,6 +92,7 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 	intTotalPaymentAmount, _ := strconv.Atoi(totalPaymentAmount)
 	intStoreid, _ := strconv.Atoi(storeid)
 	intCustomerID, _ := strconv.Atoi(customerid)
+	intCategorieid, _ := strconv.Atoi(categorieid)
 
 	error2 := function.TokenValid(r)
 	if error2 != nil {
@@ -110,6 +116,14 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 	defer conn.Close(context.Background())
 
 	ID := function.SelectUserID(adder)
+
+	var sowalgaTmt int
+	var sowalgaUsd int
+
+	err = conn.QueryRow(context.Background(), sqlselectSowalga, ID).Scan(&sowalgaTmt, &sowalgaUsd)
+	if err != nil {
+		fmt.Println("ERROR")
+	}
 
 	if typeOfTransfer == "girdi" {
 		if currency == "TMT" {
@@ -157,21 +171,33 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 	}
 	if typeOfTransfer == "cykdy" {
 		if currency == "TMT" {
-			var name string
-			err = conn.QueryRow(context.Background(), sqlUpdate3, intTotalPaymentAmount, intTotalPaymentAmount, intStoreid).Scan(&name)
-			if err != nil {
-				fmt.Println("There is no enough moeney!")
-				fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-				os.Exit(3)
+			if sowalgaTmt >= intTotalPaymentAmount {
+				var name string
+				err = conn.QueryRow(context.Background(), sqlUpdate3, intTotalPaymentAmount, intTotalPaymentAmount, intStoreid).Scan(&name)
+				if err != nil {
+					fmt.Println("There is no enough moeney!")
+					fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+					os.Exit(3)
+				}
+				rows, err := conn.Exec(context.Background(), sqlUpdateSowalga, intTotalPaymentAmount, ID)
+				if rows == nil {
+					fmt.Println(rows, err)
+				}
 			}
 		}
 		if currency == "USD" {
-			var name string
-			err = conn.QueryRow(context.Background(), sqlUpdate4, intTotalPaymentAmount, intTotalPaymentAmount, intStoreid).Scan(&name)
-			if err != nil {
-				fmt.Println("error usd")
-				fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-				os.Exit(4)
+			if sowalgaUsd >= intTotalPaymentAmount {
+				var name string
+				err = conn.QueryRow(context.Background(), sqlUpdate4, intTotalPaymentAmount, intTotalPaymentAmount, intStoreid).Scan(&name)
+				if err != nil {
+					fmt.Println("error usd")
+					fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+					os.Exit(4)
+				}
+				rows, err := conn.Exec(context.Background(), sqlUpdateSowalga2, intTotalPaymentAmount, ID)
+				if rows == nil {
+					fmt.Println(rows, err)
+				}
 			}
 		}
 		var m int
@@ -181,6 +207,7 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 			os.Exit(100)
 		}
 	}
+
 	b := parentStore(intStoreid)
 
 	for j := 1; j < len(b)-1; j++ {
@@ -227,21 +254,20 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	id := 0
-	err = conn.QueryRow(context.Background(), sqlInsert2, storeid, typeOfTransfer, typeOfAccount, currency, categorieid,
-		customerid, project, typeOfIncomePayment, totalPaymentAmount, ID).Scan(&id)
+	err = conn.QueryRow(context.Background(), sqlInsert2, intStoreid, typeOfTransfer, typeOfAccount, currency, intCategorieid,
+		intCustomerID, project, typeOfIncomePayment, intTotalPaymentAmount, ID).Scan(&id)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
 		os.Exit(100)
 	}
-
 }
 
 func BetweenStores(w http.ResponseWriter, r *http.Request) {
-	//userid := r.FormValue("user_id")
 	currency := r.FormValue("currency")
 	fromstorename := r.FormValue("from_store_name")
 	toStorename := r.FormValue("to_store_name")
 	totalPaymentAmount := r.FormValue("total_payment_amount")
+	typeOfAccount := r.FormValue("type_of_account")
 	note := r.FormValue("note")
 
 	fromstoreid := IDOfStore(fromstorename)
@@ -249,126 +275,172 @@ func BetweenStores(w http.ResponseWriter, r *http.Request) {
 
 	intTotalPaymentAmount, _ := strconv.Atoi(totalPaymentAmount)
 
-	function.VerifyToken(r)
-	function.TokenValid(r)
+	error2 := function.TokenValid(r)
+	if error2 != nil {
+		fmt.Println("Time is over!")
+		os.Exit(112)
+	}
 
-	tokenString := function.ExtractToken(r)
-	claims := jwt.MapClaims{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte("jdnfksdmfksd"), nil
-	})
+	_, error1 := function.VerifyToken(r)
+	if error1 != nil {
+		fmt.Println("It is not mine!")
+		os.Exit(111)
+	}
 
-	for key, val := range claims {
-		if key == "username" {
+	adder := function.TokenData(r)
 
-			conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(10)
+	}
+	defer conn.Close(context.Background())
+
+	ID := function.SelectUserID(adder)
+
+	if currency == "TMT" {
+		var name string
+		err = conn.QueryRow(context.Background(), sqlUpdate3, intTotalPaymentAmount, intTotalPaymentAmount, fromstoreid).Scan(&name)
+		if err != nil {
+			fmt.Println("error tmt")
+			fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+			os.Exit(12)
+		}
+		var currency string
+		err = conn.QueryRow(context.Background(), sqlUpdate, intTotalPaymentAmount, intTotalPaymentAmount, tostoreid).Scan(&currency)
+		if err != nil {
+			fmt.Println("error tmt")
+			fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+			os.Exit(13)
+		}
+
+	}
+	if currency == "USD" {
+		var asd string
+		err = conn.QueryRow(context.Background(), sqlUpdate4, intTotalPaymentAmount, intTotalPaymentAmount, fromstoreid).Scan(&asd)
+		if err != nil {
+			fmt.Println("error tmt")
+			fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+			os.Exit(15)
+		}
+
+		var as string
+		err = conn.QueryRow(context.Background(), sqlUpdate2, intTotalPaymentAmount, intTotalPaymentAmount, tostoreid).Scan(&as)
+		if err != nil {
+			fmt.Println("error tmt")
+			fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+			os.Exit(15)
+		}
+	}
+
+	c := parentStore(fromstoreid)
+	d := parentStore(tostoreid)
+
+	for j := 1; j < len(c)-1; j++ {
+		if currency == "TMT" {
+			var name string
+			err = conn.QueryRow(context.Background(), sqlUpdate7, intTotalPaymentAmount, c[j]).Scan(&name)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-				os.Exit(10)
-			}
-			defer conn.Close(context.Background())
-
-			k := val
-			var ID int
-			err = conn.QueryRow(context.Background(), sqlSelectID, k).Scan(&ID)
-			if err != nil {
+				fmt.Println("error tmt")
 				fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-				os.Exit(1)
-			}
-
-			if currency == "TMT" {
-				var name string
-				err = conn.QueryRow(context.Background(), sqlUpdate3, intTotalPaymentAmount, intTotalPaymentAmount, fromstoreid).Scan(&name)
-				if err != nil {
-					fmt.Println("error tmt")
-					fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-					os.Exit(12)
-				}
-				var currency string
-				err = conn.QueryRow(context.Background(), sqlUpdate, intTotalPaymentAmount, intTotalPaymentAmount, tostoreid).Scan(&currency)
-				if err != nil {
-					fmt.Println("error tmt")
-					fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-					os.Exit(13)
-				}
-
-			}
-			if currency == "USD" {
-				var asd string
-				err = conn.QueryRow(context.Background(), sqlUpdate4, intTotalPaymentAmount, intTotalPaymentAmount, fromstoreid).Scan(&asd)
-				if err != nil {
-					fmt.Println("error tmt")
-					fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-					os.Exit(15)
-				}
-
-				var as string
-				err = conn.QueryRow(context.Background(), sqlUpdate2, intTotalPaymentAmount, intTotalPaymentAmount, tostoreid).Scan(&as)
-				if err != nil {
-					fmt.Println("error tmt")
-					fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-					os.Exit(15)
-				}
-			}
-
-			c := parentStore(fromstoreid)
-			d := parentStore(tostoreid)
-
-			for j := 1; j < len(c)-1; j++ {
-				if currency == "TMT" {
-					var name string
-					err = conn.QueryRow(context.Background(), sqlUpdate7, intTotalPaymentAmount, c[j]).Scan(&name)
-					if err != nil {
-						fmt.Println("error tmt")
-						fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-						os.Exit(16)
-					}
-				}
-				if currency == "USD" {
-					var name string
-					err = conn.QueryRow(context.Background(), sqlUpdate8, intTotalPaymentAmount, c[j]).Scan(&name)
-					if err != nil {
-						fmt.Println("error usd")
-						fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-						os.Exit(17)
-					}
-				}
-			}
-
-			for j := 1; j < len(d)-1; j++ {
-				if currency == "TMT" {
-					var name string
-					err = conn.QueryRow(context.Background(), sqlUpdate5, intTotalPaymentAmount, d[j]).Scan(&name)
-					if err != nil {
-						fmt.Println("error tmt")
-						fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-						os.Exit(18)
-					}
-				}
-				if currency == "USD" {
-					var name string
-					err = conn.QueryRow(context.Background(), sqlUpdate6, intTotalPaymentAmount, d[j]).Scan(&name)
-					if err != nil {
-						fmt.Println("error usd")
-						fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-						os.Exit(19)
-					}
-				}
-			}
-			var m int
-			err = conn.QueryRow(context.Background(), sqlInsert5, ID, "Dukandan dukana pul gecirim", fromstorename, toStorename, totalPaymentAmount, currency).Scan(&m)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-				os.Exit(11)
-			}
-
-			id := 0
-			err = conn.QueryRow(context.Background(), sqlInsert3, ID, fromstorename, toStorename, totalPaymentAmount, currency, note).Scan(&id)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-				os.Exit(11)
+				os.Exit(16)
 			}
 		}
-		fmt.Println(token, err)
+		if currency == "USD" {
+			var name string
+			err = conn.QueryRow(context.Background(), sqlUpdate8, intTotalPaymentAmount, c[j]).Scan(&name)
+			if err != nil {
+				fmt.Println("error usd")
+				fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+				os.Exit(17)
+			}
+		}
 	}
+
+	for j := 1; j < len(d)-1; j++ {
+		if currency == "TMT" {
+			var name string
+			err = conn.QueryRow(context.Background(), sqlUpdate5, intTotalPaymentAmount, d[j]).Scan(&name)
+			if err != nil {
+				fmt.Println("error tmt")
+				fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+				os.Exit(18)
+			}
+		}
+		if currency == "USD" {
+			var name string
+			err = conn.QueryRow(context.Background(), sqlUpdate6, intTotalPaymentAmount, d[j]).Scan(&name)
+			if err != nil {
+				fmt.Println("error usd")
+				fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+				os.Exit(19)
+			}
+		}
+	}
+	var m int
+	err = conn.QueryRow(context.Background(), sqlInsert5, ID, "Dukandan dukana pul gecirim", fromstorename, toStorename, totalPaymentAmount, currency).Scan(&m)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(11)
+	}
+
+	id := 0
+	err = conn.QueryRow(context.Background(), sqlInsert3, ID, fromstorename, toStorename, totalPaymentAmount, currency, typeOfAccount, note).Scan(&id)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(11)
+	}
+}
+
+func GiveMoneyToUser(w http.ResponseWriter, r *http.Request) {
+	amount := r.FormValue("amount")
+	currency := r.FormValue("currency")
+	userid := r.FormValue("user_id")
+
+	intAmount, _ := strconv.Atoi(amount)
+	intUserid, _ := strconv.Atoi(userid)
+
+	error2 := function.TokenValid(r)
+	if error2 != nil {
+		fmt.Println("Time is over!")
+		os.Exit(112)
+	}
+
+	_, error1 := function.VerifyToken(r)
+	if error1 != nil {
+		fmt.Println("It is not mine!")
+		os.Exit(111)
+	}
+
+	adder := function.TokenData(r)
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(10)
+	}
+	defer conn.Close(context.Background())
+
+	ID := function.SelectUserID(adder)
+
+	if currency == "TMT" {
+
+		rows, err := conn.Exec(context.Background(), sqlUpdateSowalga3, intAmount, intUserid)
+		if rows == nil {
+			fmt.Println(rows, err)
+		}
+	}
+
+	if currency == "USD" {
+		rows, err := conn.Exec(context.Background(), sqlUpdateSowalga4, intAmount, intUserid)
+		if rows == nil {
+			fmt.Println(rows, err)
+		}
+	}
+
+	rows, err := conn.Exec(context.Background(), sqlInsertMessage, ID, "Usere sowalga bermek", userid, amount, currency)
+	if rows == nil {
+		fmt.Println(rows, err)
+	}
+
 }
