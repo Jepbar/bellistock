@@ -49,7 +49,6 @@ CREATE TABLE customers(
     note            VARCHAR(100) 
 );
 
-
 CREATE TABLE money_transfers(
     id                           SERIAL,
     store_id                     INT                NOT NULL,
@@ -66,13 +65,12 @@ CREATE TABLE money_transfers(
     jemi_gecirilmelisi           INT                DEFAULT NULL,
     gecirileni                   INT                DEFAULT NULL,
     galany                       INT                DEFAULT NULL,
-    money_gone_to                VARCHAR(100)       DEFAULT NULL,
+    money_gone_to                VARCHAR(100)       DEFAULT '',
     user_id                      INT                NOT NULL,
     note                         VARCHAR(255)       DEFAULT NULL,
     contract                     VARCHAR(255)       DEFAULT NULL,
     create_ts TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
-
 
 CREATE TABLE transfers_between_stores(
     id                     SERIAL,
@@ -82,11 +80,11 @@ CREATE TABLE transfers_between_stores(
     type_of_account        VARCHAR(100)           NOT NULL,
     currency               VARCHAR(100)           NOT NULL,
     total_payment_amount   INT                    NOT NULL,
+    date                   date                   NOT NULL,
     note                   VARCHAR(255),
     create_ts TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 
 );
-
 
 CREATE TABLE last_modifications(
     id                       SERIAL,
@@ -94,6 +92,7 @@ CREATE TABLE last_modifications(
     action                   VARCHAR(255)       NOT NULL,
     message                  VARCHAR(255)       NOT NULL,
     is_it_seen               INT                DEFAULT 0,
+    
     create_ts TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 
 );

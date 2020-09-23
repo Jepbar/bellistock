@@ -19,6 +19,7 @@ type ResponseErrorCodeAndMessage struct {
 	ErrorCode    string  `json:"error_code"`
 	ErrorMessage *string `json:"error_msg,omitempty"`
 }
+
 type Users struct {
 	Userid     int    `json:"userid"`
 	Username   string `json:"username"`
@@ -55,14 +56,25 @@ type Stores struct {
 }
 
 type LastActions struct {
-	User    string `json:"done_by"`
-	Action  string `json:"action"`
-	Message string `json:"message"`
+	Id         int    `json:"id"`
+	User       string `json:"done_by"`
+	Action     string `json:"action"`
+	Message    string `json:"message"`
+	Date       string `json:"date"`
+	LastStatus string `json:"last_status"`
 }
 
 type UserLogin struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
+}
+
+type Workers struct {
+	Workerid      int    `json:"worker_id"`
+	Fullname      string `json:"fullname"`
+	Salary        int    `json:"salary"`
+	Wezipesi      string `json:"wezipes"`
+	DegisliDukany string `json:"degisli_dukany"`
 }
 
 type BetweenStores struct {
@@ -73,6 +85,42 @@ type BetweenStores struct {
 	TypeOfAccount      string `json:"type_of_account"`
 	Currency           string `json:"currency"`
 	TotalPaymentAmount int    `json:"total_payment_amount"`
+	Date               string `json:"date"`
+}
+
+type MoneyTransfer struct {
+	Id                 int    `json:"id"`
+	Store              string `json:"store"`
+	TypeOfTransfer     string `json:"type_of_transfer"`
+	TypeOfAccount      string `json:"type_of_account"`
+	DoneBy             string `json:"done_by"`
+	TotalPaymentAmount int    `json:"total_payment_amount"`
+	Currency           string `json:"currency"`
+	Categorie          string `json:"categorie"`
+	Date               string `json:"date"`
+}
+
+type Incomes struct {
+	Id                 int    `json:"id"`
+	Store              string `json:"store"`
+	TypeOfAccount      string `json:"type_of_account"`
+	TotalPaymentAmount int    `json:"total_payment_amount"`
+	Currency           string `json:"currency"`
+	Categorie          string `json:"categorie"`
+	Date               string `json:"date"`
+	Customer           string `json:"customer"`
+	Project            string `json:"project"`
+}
+
+type Outcomes struct {
+	Id                 int    `json:"id"`
+	Store              string `json:"store"`
+	MoneyGoneTo        string `json:"money_gone_to"`
+	TypeOfAccount      string `json:"type_of_account"`
+	TotalPaymentAmount int    `json:"total_payment_amount"`
+	Currency           string `json:"currency"`
+	Categorie          string `json:"categorie"`
+	Date               string `json:"date"`
 }
 
 const (

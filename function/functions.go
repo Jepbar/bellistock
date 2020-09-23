@@ -14,7 +14,11 @@ import (
 )
 
 const (
-	sqlSelect = `select user_id from users where username = $1`
+	layoutISO          = "2006-01-02"
+	sqlSelect          = `select user_id from users where username = $1`
+	sqlSelectUsername  = `select username from users where user_id = $1`
+	sqlSelectcategorie = `select name from categories where categorie_id = $1`
+	sqlSelectCustomer  = `select name from customers where customer_id = $1`
 )
 
 func Hash(x string) string {
@@ -152,3 +156,62 @@ func SelectUserID(x string) int {
 	}
 	return ID
 }
+
+func SelectUsername(x int) string {
+	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1000)
+	}
+	defer conn.Close(context.Background())
+
+	var Username string
+	err = conn.QueryRow(context.Background(), sqlSelectUsername, x).Scan(&Username)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(12)
+	}
+	return Username
+}
+func SelectCategorie(x int) string {
+	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1000)
+	}
+	defer conn.Close(context.Background())
+
+	var Categorie string
+	err = conn.QueryRow(context.Background(), sqlSelectcategorie, x).Scan(&Categorie)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(12)
+	}
+	return Categorie
+}
+
+func SelectCustomer(x int) string {
+	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1000)
+	}
+	defer conn.Close(context.Background())
+
+	var Customer string
+	err = conn.QueryRow(context.Background(), sqlSelectCustomer, x).Scan(&Customer)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(12)
+	}
+	return Customer
+}
+
+func ChangeStringToDate(x string) time.Time {
+
+	date := x
+	t, _ := time.Parse(layoutISO, date)
+	return t
+}
+
+func GenerateSqlFilter()
