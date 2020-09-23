@@ -123,6 +123,12 @@ type Outcomes struct {
 	Date               string `json:"date"`
 }
 
+type Filterworkers struct {
+	Name           string `json:"name"`
+	DependingStore string `json:"depending_store"`
+	Wezipesi       string `json:"wezipesi"`
+}
+
 const (
 	ErrorCodeOK                  int = 200
 	ErrorCodeTfaRequired         int = 250

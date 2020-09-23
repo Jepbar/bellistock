@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"stock/responses"
 	"strings"
 	"time"
 
@@ -214,4 +215,6 @@ func ChangeStringToDate(x string) time.Time {
 	return t
 }
 
-func GenerateSqlFilter()
+func GenerateSqlFilterWorkers(x responses.Filterworkers) string {
+
+}
