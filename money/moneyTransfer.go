@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	sqlInsert2        = `insert into money_transfers(store_id, type_of_transfer, type_of_account, currency, categorie_id, customer_id,project, type_of_income_payment, total_payment_amount,user_id, date) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) returning id`
+	sqlInsert2        = `insert into money_transfers(store_id, type_of_transfer, type_of_account, currency, categorie, customer ,project, type_of_income_payment, total_payment_amount,user_id, date) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) returning id`
 	sqlUpdate         = `update stores set jemi_hasap_tmt = jemi_hasap_tmt + $1 , shahsy_hasap_tmt = shahsy_hasap_tmt + $2 where store_id = $3 returning name`
 	sqlUpdate2        = `update stores set jemi_hasap_usd = jemi_hasap_usd + $1 , shahsy_hasap_usd = shahsy_hasap_usd + $2 where store_id = $3 returning name`
 	sqlUpdate3        = `update stores set jemi_hasap_tmt = jemi_hasap_tmt - $1 , shahsy_hasap_tmt = shahsy_hasap_tmt - $2 where shahsy_hasap_tmt >= $2 and store_id = $3 returning name`
@@ -28,8 +28,8 @@ const (
 	sqlInsert4        = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || $4 || $5 || $6 || $7) returning id`
 	sqlInsert5        = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' dukanyndan ' || $4 || ' dukanyna '|| $5 || $6 || ' gecirdi ') returning id`
 	sqlSelectID       = `select user_id from users where username = $1`
-	sqlUpdate9        = `update customers set girdeyjisi_tmt = girdeyjisi_tmt + $1 where customer_id = $2 returning name`
-	sqlUpdate10       = `update customers set girdeyjisi_usd = girdeyjisi_usd + $1 where customer_id = $2 returning name`
+	sqlUpdate9        = `update customers set girdeyjisi_tmt = girdeyjisi_tmt + $1 where name = $2 returning name`
+	sqlUpdate10       = `update customers set girdeyjisi_usd = girdeyjisi_usd + $1 where name = $2 returning name`
 	sqlselectSowalga  = `select sowalga_tmt, sowalga_usd from users where user_id = $1`
 	sqlUpdateSowalga  = `update users set sowalga_tmt = sowalga_tmt - $1 where user_id = $2`
 	sqlUpdateSowalga2 = `update users set sowalga_usd = sowalga_usd - $1 where user_id = $2`
@@ -84,8 +84,8 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 	typeOfTransfer := r.FormValue("type_of_transfer")
 	typeOfAccount := r.FormValue("type_of_account")
 	currency := r.FormValue("currency")
-	categorieid := r.FormValue("categorie_id")
-	customerid := r.FormValue("customer_id")
+	categorie := r.FormValue("categorie")
+	customer := r.FormValue("customer")
 	project := r.FormValue("project")
 	typeOfIncomePayment := r.FormValue("type_of_income_payment")
 	totalPaymentAmount := r.FormValue("total_payment_amount")
@@ -93,8 +93,6 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 
 	intTotalPaymentAmount, _ := strconv.Atoi(totalPaymentAmount)
 	intStoreid, _ := strconv.Atoi(storeid)
-	intCustomerID, _ := strconv.Atoi(customerid)
-	intCategorieid, _ := strconv.Atoi(categorieid)
 
 	time1 := function.ChangeStringToDate(date)
 
@@ -140,7 +138,7 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 			}
 
 			var n string
-			err = conn.QueryRow(context.Background(), sqlUpdate9, intTotalPaymentAmount, intCustomerID).Scan(&n)
+			err = conn.QueryRow(context.Background(), sqlUpdate9, intTotalPaymentAmount, customer).Scan(&n)
 			if err != nil {
 				fmt.Println("error tmt")
 				fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
@@ -157,7 +155,7 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 				os.Exit(2)
 			}
 			var n string
-			err = conn.QueryRow(context.Background(), sqlUpdate10, intTotalPaymentAmount, intCustomerID).Scan(&n)
+			err = conn.QueryRow(context.Background(), sqlUpdate10, intTotalPaymentAmount, customer).Scan(&n)
 			if err != nil {
 				fmt.Println("error tmt")
 				fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
@@ -258,8 +256,8 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	id := 0
-	err = conn.QueryRow(context.Background(), sqlInsert2, intStoreid, typeOfTransfer, typeOfAccount, currency, intCategorieid,
-		intCustomerID, project, typeOfIncomePayment, intTotalPaymentAmount, ID, time1).Scan(&id)
+	err = conn.QueryRow(context.Background(), sqlInsert2, intStoreid, typeOfTransfer, typeOfAccount, currency, categorie,
+		customer, project, typeOfIncomePayment, intTotalPaymentAmount, ID, time1).Scan(&id)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
 		os.Exit(100)

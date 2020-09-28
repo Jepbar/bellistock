@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"stock/authentication"
 	"stock/creations"
+	"stock/delete"
+	"stock/filter"
 	"stock/givingresponse"
 	"stock/money"
 
@@ -13,7 +15,11 @@ import (
 func main() {
 	r := mux.NewRouter()
 
+	/*----Login---*/
+
 	r.HandleFunc("/api/login", authentication.Login)
+
+	/*---Creations---*/
 
 	r.HandleFunc("/api/useradd", creations.CreateUser)
 	r.HandleFunc("/api/createstore", creations.CreateStore)
@@ -21,9 +27,13 @@ func main() {
 	r.HandleFunc("/api/createcategorie", creations.CreateCategorie)
 	r.HandleFunc("/api/createworker", creations.CreateWorker)
 
+	/*---MoneyTransfers---*/
+
 	r.HandleFunc("/api/transfer", money.StoreHasap)
 	r.HandleFunc("/api/betweenstores", money.BetweenStores)
 	r.HandleFunc("/api/givemoney", money.GiveMoneyToUser)
+
+	/*---ResponsToFront---*/
 
 	r.HandleFunc("/api/getusers", givingresponse.GetUsers)
 	r.HandleFunc("/api/getworkers", givingresponse.GetWorkers)
@@ -31,9 +41,22 @@ func main() {
 	r.HandleFunc("/api/gettransferstores", givingresponse.GetTransferBetweenStores)
 	r.HandleFunc("/api/getlastactions", givingresponse.GetLastActions)
 	r.HandleFunc("/api/getcustomers", givingresponse.GetCustomers)
+	r.HandleFunc("/api/getcategories", givingresponse.GetCategories)
 	r.HandleFunc("/api/getmoneytransfers", givingresponse.GetMoneyTransfers)
 	r.HandleFunc("/api/getincomes", givingresponse.GetIncomes)
 	r.HandleFunc("/api/getoutcomes", givingresponse.GetOutcomes)
+
+	/*---Filters---*/
+
+	r.HandleFunc("/api/filtermoneytransfers", filter.FilterMoneyTransfers)
+	r.HandleFunc("/api/filterworkers", filter.FilterWorkers)
+	r.HandleFunc("/api/filterincomes", filter.FilterIncomes)
+	r.HandleFunc("/api/filteroutcomes", filter.FilterOutcomes)
+	r.HandleFunc("/api/filtertransferbetweenstores", filter.FilterBetweenStores)
+
+	/*---Delete---*/
+
+	r.HandleFunc("/api/deleteuser", delete.DeleteUser)
 
 	http.Handle("/", r)
 	http.ListenAndServe("localhost:8000", nil)

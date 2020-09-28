@@ -35,6 +35,11 @@ type Customers struct {
 	GirdeyjisiTmt int    `json:"girdeyjisi_tmt"`
 	GirdeyjisiUsd int    `json:"girdeyjisi_usd"`
 }
+type Categories struct {
+	Categorieid     int    `json:"categorieid"`
+	Name            string `json:"name"`
+	ParentCategorie string `json:"parent_categorie"`
+}
 
 type Stores1 struct {
 	Storeid    int    `json:"store_id"`
@@ -127,6 +132,44 @@ type Filterworkers struct {
 	Name           string `json:"name"`
 	DependingStore string `json:"depending_store"`
 	Wezipesi       string `json:"wezipesi"`
+}
+
+type FilterMoneyTransfers struct {
+	Store         string `json:"store"`
+	TypeOfaccount string `json:"type_of_account"`
+	Keyword       string `json:"keyword"`
+	Categorie     string `json:"categorie"`
+	Begin         string `json:"begin"`
+	End           string `json:"end"`
+}
+
+type FilterIncomes struct {
+	Store               string `json:"store"`
+	TypeOfaccount       string `json:"type_of_account"`
+	Keyword             string `json:"keyword"`
+	Categorie           string `json:"categorie"`
+	Customer            string `json:"customer"`
+	TypeOfIncomePayment string `json:"type_of_income_payment"`
+	Begin               string `json:"begin"`
+	End                 string `json:"end"`
+}
+
+type FilterOutcomes struct {
+	Store         string `json:"store"`
+	TypeOfaccount string `json:"type_of_account"`
+	MoneyGoneTo   string `json:"money_gone_to"`
+	Keyword       string `json:"keyword"`
+	Categorie     string `json:"categorie"`
+	Begin         string `json:"begin"`
+	End           string `json:"end"`
+}
+
+type FilterBetweenStores struct {
+	FromStoreName string `json:"from_store_name"`
+	ToStoreName   string `json:"to_store_name"`
+	TypeOfAccount string `json:"type_of_account"`
+	Begin         string `json:"begin"`
+	End           string `json:"end"`
 }
 
 const (

@@ -7,7 +7,8 @@ CREATE TABLE users(
     email       VARCHAR(100)    NOT NULL,
     role        VARCHAR(100)    NOT NULL,
     sowalga_tmt   INT           DEFAULT 0  NOT NULL,
-    sowalga_usd   INT           DEFAULT 0  NOT NULL
+    sowalga_usd   INT           DEFAULT 0  NOT NULL,
+    is_it_deleted  VARCHAR(100) DEFAULT 'False'
 );
 
 
@@ -28,7 +29,7 @@ CREATE TABLE workers(
 CREATE TABLE stores(
     store_id                SERIAL,
     name                    VARCHAR(100)             NOT NULL,
-    parent_store_id         INT,       
+    parent_store_id         INT    DEFAULT 1,       
     jemi_hasap_tmt          INT    DEFAULT 0         NOT NULL,
     jemi_hasap_usd          INT    DEFAULT 0         NOT NULL,
     shahsy_hasap_tmt        INT    DEFAULT 0         NOT NULL,
@@ -46,6 +47,7 @@ CREATE TABLE customers(
     name            VARCHAR(100)    NOT NULL,
     girdeyjisi_tmt      int         DEFAULT 0,
     girdeyjisi_usd      int         DEFAULT 0,
+    is_it_deleted   VARCHAR(100)    DEFAULT 'False',
     note            VARCHAR(100) 
 );
 
@@ -55,10 +57,10 @@ CREATE TABLE money_transfers(
     type_of_transfer             VARCHAR(100)       NOT NULL,        /* girdi, cykdy */
     type_of_account              VARCHAR(100)       NOT NULL,        /*nagt, bank*/
     currency                     VARCHAR(100)       NOT NULL,        
-    categorie_id                 INT                NOT NULL,
+    categorie                    VARCHAR(100)       NOT NULL,
     date                         date,          
     keyword                      VARCHAR(255)       DEFAULT NULL,
-    customer_id                  INT                DEFAULT NULL,
+    customer                     VARCHAR(100)       DEFAULT NULL,
     project                      VARCHAR(100)       DEFAULT NULL,
     type_of_income_payment       VARCHAR(100)       DEFAULT NULL,      /*doly, doly dal*/
     total_payment_amount         INT                DEFAULT NULL,      /*mocberi*/

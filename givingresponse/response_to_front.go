@@ -14,17 +14,18 @@ import (
 )
 
 const (
-	sqlSelect                      = `select user_id, username, role, email, sowalga_tmt, sowalga_usd from users`
+	sqlSelect                      = `select user_id, username, role, email, sowalga_tmt, sowalga_usd from users where is_it_deleted = 'False'`
 	sqlSelectStores                = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores`
 	sqlSelectChildStore            = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores where parent_store_id = $1`
 	sqlSelectLastActions           = `select l.id, u.username, l.action, l.message, l.create_ts, l.is_it_seen from last_modifications l inner join users u on l.user_id = u.user_id order by id desc limit $1 offset $2`
 	sqlUpdateActions               = `update last_modifications set is_it_seen = $1 where id = $2`
-	sqlSelectCustomer              = `select customer_id, name, girdeyjisi_tmt, girdeyjisi_usd from customers`
+	sqlSelectCustomer              = `select customer_id, name, girdeyjisi_tmt, girdeyjisi_usd from customers where is_it_deleted = 'False'`
 	sqlSelectTransferBetweenStores = `select id, user_id, from_store_name, to_store_name, total_payment_amount, currency, type_of_account, date from transfers_between_stores`
 	sqlSelectWorkers               = `select worker_id , fullname, wezipesi, salary, degisli_dukany from workers`
-	sqlSelectMoneyTransfers        = `select m.id, s.name, m.type_of_transfer, m.user_id, m.type_of_account, m.total_payment_amount, m.currency, m.date, m.categorie_id from money_transfers m inner join stores s on s.store_id = m.store_id`
-	sqlSelectIncomes               = `select m.id, s.name, m.customer_id, m.project, m.type_of_account, m.total_payment_amount, m.currency, m.date, m.categorie_id from money_transfers m inner join stores s on s.store_id = m.store_id where m.type_of_transfer = 'girdi'`
-	sqlSelectOutcomes              = `select m.id, s.name, m.money_gone_to, m.total_payment_amount, m.currency, m.type_of_account, m.date, m.categorie_id from money_transfers m inner join stores s on s.store_id = m.store_id where m.type_of_transfer = 'cykdy'`
+	sqlSelectMoneyTransfers        = `select m.id, s.name, m.type_of_transfer, m.user_id, m.type_of_account, m.total_payment_amount, m.currency, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id`
+	sqlSelectIncomes               = `select m.id, s.name, m.customer, m.project, m.type_of_account, m.total_payment_amount, m.currency, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id where m.type_of_transfer = 'girdi'`
+	sqlSelectOutcomes              = `select m.id, s.name, m.money_gone_to, m.total_payment_amount, m.currency, m.type_of_account, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id where m.type_of_transfer = 'cykdy'`
+	sqlSelectCategories            = `select categorie_id, name, parent_categorie from categories`
 )
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
@@ -255,6 +256,46 @@ func GetCustomers(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func GetCategories(w http.ResponseWriter, r *http.Request) {
+	error2 := function.TokenValid(r)
+	if error2 != nil {
+		fmt.Println("Time is over!")
+		os.Exit(112)
+	}
+
+	_, error1 := function.VerifyToken(r)
+	if error1 != nil {
+		fmt.Println("It is not mine!")
+		os.Exit(111)
+	}
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	defer conn.Close(context.Background())
+
+	rows, err := conn.Query(context.Background(), sqlSelectCategories)
+
+	defer rows.Close()
+	List := make([]*responses.Categories, 0)
+	for rows.Next() {
+		categorie := &responses.Categories{}
+		err = rows.Scan(&categorie.Categorieid, &categorie.Name, &categorie.ParentCategorie)
+		if err != nil {
+			fmt.Println("ERROR")
+			os.Exit(1101)
+		}
+
+		List = append(List, categorie)
+
+	}
+	item := List
+
+	responses.SendResponse(w, err, item, nil)
+}
+
 func GetTransferBetweenStores(w http.ResponseWriter, r *http.Request) {
 	error2 := function.TokenValid(r)
 	if error2 != nil {
@@ -371,9 +412,8 @@ func GetMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var Userid int
 		var date time.Time
-		var CategorieId int
 		moneyTransfer := &responses.MoneyTransfer{}
-		err = rows.Scan(&moneyTransfer.Id, &moneyTransfer.Store, &moneyTransfer.TypeOfTransfer, &Userid, &moneyTransfer.TypeOfAccount, &moneyTransfer.TotalPaymentAmount, &moneyTransfer.Currency, &date, &CategorieId)
+		err = rows.Scan(&moneyTransfer.Id, &moneyTransfer.Store, &moneyTransfer.TypeOfTransfer, &Userid, &moneyTransfer.TypeOfAccount, &moneyTransfer.TotalPaymentAmount, &moneyTransfer.Currency, &date, &moneyTransfer.Categorie)
 		if err != nil {
 			fmt.Println("ERROR")
 			os.Exit(1101)
@@ -383,7 +423,6 @@ func GetMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 
 		moneyTransfer.DoneBy = Username
 		moneyTransfer.Date = dateOfTransfer
-		moneyTransfer.Categorie = function.SelectCategorie(CategorieId)
 
 		List = append(List, moneyTransfer)
 
@@ -420,11 +459,9 @@ func GetIncomes(w http.ResponseWriter, r *http.Request) {
 
 	List := make([]*responses.Incomes, 0)
 	for rows.Next() {
-		var Customerid int
 		var date time.Time
-		var Categorieid int
 		income := &responses.Incomes{}
-		err = rows.Scan(&income.Id, &income.Store, &Customerid, &income.Project, &income.TypeOfAccount, &income.TotalPaymentAmount, &income.Currency, &date, &Categorieid)
+		err = rows.Scan(&income.Id, &income.Store, &income.Customer, &income.Project, &income.TypeOfAccount, &income.TotalPaymentAmount, &income.Currency, &date, &income.Categorie)
 		if err != nil {
 			fmt.Println("ERROR")
 			os.Exit(1101)
@@ -432,8 +469,6 @@ func GetIncomes(w http.ResponseWriter, r *http.Request) {
 		dateOfTransfer := date.Format("2006-01-02")
 
 		income.Date = dateOfTransfer
-		income.Customer = function.SelectCustomer(Customerid)
-		income.Categorie = function.SelectCategorie(Categorieid)
 
 		List = append(List, income)
 
@@ -471,9 +506,9 @@ func GetOutcomes(w http.ResponseWriter, r *http.Request) {
 	List := make([]*responses.Outcomes, 0)
 	for rows.Next() {
 		var date time.Time
-		var Categorieid int
+
 		outcome := &responses.Outcomes{}
-		err = rows.Scan(&outcome.Id, &outcome.Store, &outcome.MoneyGoneTo, &outcome.TotalPaymentAmount, &outcome.Currency, &outcome.TypeOfAccount, &date, &Categorieid)
+		err = rows.Scan(&outcome.Id, &outcome.Store, &outcome.MoneyGoneTo, &outcome.TotalPaymentAmount, &outcome.Currency, &outcome.TypeOfAccount, &date, &outcome.Categorie)
 		if err != nil {
 			fmt.Println("ERROR")
 			os.Exit(1101)
@@ -481,7 +516,6 @@ func GetOutcomes(w http.ResponseWriter, r *http.Request) {
 		dateOfTransfer := date.Format("2006-01-02")
 
 		outcome.Date = dateOfTransfer
-		outcome.Categorie = function.SelectCategorie(Categorieid)
 
 		List = append(List, outcome)
 

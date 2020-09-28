@@ -174,6 +174,7 @@ func SelectUsername(x int) string {
 	}
 	return Username
 }
+
 func SelectCategorie(x int) string {
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
 	if err != nil {
@@ -215,6 +216,198 @@ func ChangeStringToDate(x string) time.Time {
 	return t
 }
 
-func GenerateSqlFilterWorkers(x responses.Filterworkers) string {
+func GenerateSqlFilterWorkers(filter responses.Filterworkers) (sql string, err error) {
+	sql = `select worker_id , fullname, wezipesi, salary, degisli_dukany from workers`
+	ok := false
+	if len(filter.Name) > 0 {
+		sql += ` where fullname ` + `ILIKE` + `'%` + filter.Name + `%'`
+		ok = true
+	}
+	if len(filter.Wezipesi) > 0 {
+		if ok == false {
+			sql += ` where wezipesi ` + `ILIKE` + `'%` + filter.Wezipesi + `%'`
+			ok = true
+		} else {
+			sql += ` and wezipesi ` + `ILIKE` + `'%` + filter.Wezipesi + `%'`
+		}
+	}
+	if len(filter.DependingStore) > 0 {
+		if ok == false {
+			sql += ` where degisli_dukany ` + `ILIKE` + `'%` + filter.DependingStore + `%'`
+			ok = true
+		} else {
+			sql += ` and degisli_dukany ` + `ILIKE` + `'%` + filter.DependingStore + `%'`
+		}
+	}
+
+	return
+
+}
+
+func GenerateSqlFilterMoneyTransfers(filter responses.FilterMoneyTransfers) (sql string, err error) {
+	sql = `select m.id, s.name, m.type_of_transfer, m.user_id, m.type_of_account, m.total_payment_amount, m.currency, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id`
+	ok := false
+
+	if len(filter.Store) > 0 {
+		sql += ` where s.name ` + `ILIKE` + `'%` + filter.Store + `%'`
+		ok = true
+	}
+	if len(filter.TypeOfaccount) > 0 {
+		if ok == false {
+			sql += ` where m.type_of_account ` + `ILIKE` + `'%` + filter.TypeOfaccount + `%'`
+			ok = true
+		} else {
+			sql += ` and type_of_account ` + `ILIKE` + `'%` + filter.TypeOfaccount + `%'`
+		}
+	}
+	if len(filter.Categorie) > 0 {
+		if ok == false {
+			sql += ` where m.categorie ` + `ILIKE` + `'%` + filter.Categorie + `%'`
+			ok = true
+		} else {
+			sql += ` and m.categorie ` + `ILIKE` + `'%` + filter.Categorie + `%'`
+		}
+	}
+	if len(filter.Keyword) > 0 {
+		if ok == false {
+			sql += ` where m.keyword ` + `ILIKE` + `'%` + filter.Keyword + `%'`
+			ok = true
+		} else {
+			sql += ` and m.keyword ` + `ILIKE` + `'%` + filter.Keyword + `%'`
+		}
+	}
+
+	if len(filter.Begin) > 0 {
+		if ok == false {
+			sql += ` where m.date ` + ` >=` + `'` + filter.Begin + `'`
+			ok = true
+		} else {
+			sql += ` and m.date ` + ` >=` + `'` + filter.Begin + `'`
+		}
+	}
+	if len(filter.End) > 0 {
+		if ok == false {
+			sql += ` where m.date ` + ` <=` + `'` + filter.End + `'`
+			ok = true
+		} else {
+			sql += ` and m.date ` + ` <=` + `'` + filter.End + `'`
+		}
+	}
+	return
+
+}
+
+func GenerateSqlFilterIncomes(filter responses.FilterIncomes) (sql string, err error) {
+	sql = `select m.id, s.name, m.customer, m.project, m.type_of_account, m.total_payment_amount, m.currency, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id where m.type_of_transfer = 'girdi'`
+
+	if len(filter.Store) > 0 {
+		sql += ` and s.name ` + `ILIKE` + `'%` + filter.Store + `%'`
+	}
+
+	if len(filter.TypeOfaccount) > 0 {
+		sql += ` and type_of_account ` + `ILIKE` + `'%` + filter.TypeOfaccount + `%'`
+	}
+
+	if len(filter.Categorie) > 0 {
+		sql += ` and m.categorie ` + `ILIKE` + `'%` + filter.Categorie + `%'`
+	}
+
+	if len(filter.Keyword) > 0 {
+		sql += ` and m.keyword ` + `ILIKE` + `'%` + filter.Keyword + `%'`
+	}
+
+	if len(filter.Customer) > 0 {
+		sql += ` and m.customer ` + `ILIKE` + `'%` + filter.Customer + `%'`
+	}
+
+	if len(filter.TypeOfIncomePayment) > 0 {
+		sql += ` and m.type_of_income_payment ` + `=` + `'` + filter.TypeOfIncomePayment + `'`
+	}
+
+	if len(filter.Begin) > 0 {
+		sql += ` and m.date ` + ` >=` + `'` + filter.Begin + `'`
+	}
+	if len(filter.End) > 0 {
+		sql += ` and m.date ` + ` <=` + `'` + filter.End + `'`
+	}
+	return
+
+}
+
+func GenerateSqlFilterOutcomes(filter responses.FilterOutcomes) (sql string, err error) {
+	sql = `select m.id, s.name, m.money_gone_to, m.total_payment_amount, m.currency, m.type_of_account, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id where m.type_of_transfer = 'cykdy'`
+
+	if len(filter.Store) > 0 {
+		sql += ` and s.name ` + `ILIKE` + `'%` + filter.Store + `%'`
+	}
+
+	if len(filter.TypeOfaccount) > 0 {
+		sql += ` and type_of_account ` + `ILIKE` + `'%` + filter.TypeOfaccount + `%'`
+	}
+
+	if len(filter.Categorie) > 0 {
+		sql += ` and m.categorie ` + `ILIKE` + `'%` + filter.Categorie + `%'`
+	}
+
+	if len(filter.Keyword) > 0 {
+		sql += ` and m.keyword ` + `ILIKE` + `'%` + filter.Keyword + `%'`
+	}
+
+	if len(filter.MoneyGoneTo) > 0 {
+		sql += ` and m.money_gone_to ` + `ILIKE` + `'%` + filter.MoneyGoneTo + `%'`
+	}
+
+	if len(filter.Begin) > 0 {
+		sql += ` and m.date ` + ` >=` + `'` + filter.Begin + `'`
+	}
+
+	if len(filter.End) > 0 {
+		sql += ` and m.date ` + ` <=` + `'` + filter.End + `'`
+	}
+	return
+
+}
+
+func GenerateSqlFilterTransferBetweenStores(filter responses.FilterBetweenStores) (sql string, err error) {
+	sql = `select id, user_id, from_store_name, to_store_name, total_payment_amount, currency, type_of_account, date from transfers_between_stores`
+	ok := false
+
+	if len(filter.FromStoreName) > 0 {
+		sql += ` where from_store_name ` + `ILIKE` + `'%` + filter.FromStoreName + `%'`
+		ok = true
+	}
+	if len(filter.ToStoreName) > 0 {
+		if ok == false {
+			sql += ` where to_store_name ` + `ILIKE` + `'%` + filter.ToStoreName + `%'`
+			ok = true
+		} else {
+			sql += ` and to_store_name ` + `ILIKE` + `'%` + filter.ToStoreName + `%'`
+		}
+	}
+	if len(filter.TypeOfAccount) > 0 {
+		if ok == false {
+			sql += ` where type_of_account ` + `ILIKE` + `'%` + filter.TypeOfAccount + `%'`
+			ok = true
+		} else {
+			sql += ` and type_of_account ` + `ILIKE` + `'%` + filter.TypeOfAccount + `%'`
+		}
+	}
+	if len(filter.Begin) > 0 {
+		if ok == false {
+			sql += ` where date ` + ` >=` + `'` + filter.Begin + `'`
+			ok = true
+		} else {
+			sql += ` and date ` + ` >=` + `'` + filter.Begin + `'`
+		}
+	}
+	if len(filter.End) > 0 {
+		if ok == false {
+			sql += ` where date ` + ` <=` + `'` + filter.End + `'`
+			ok = true
+		} else {
+			sql += ` and date ` + ` <=` + `'` + filter.End + `'`
+		}
+	}
+	return
 
 }
