@@ -57,6 +57,7 @@ func main() {
 	/*---Delete---*/
 
 	r.HandleFunc("/api/deleteuser", delete.DeleteUser)
+	r.HandleFunc("/api/deletecustomer", delete.DeleteCustomer)
 
 	http.Handle("/", r)
 	http.ListenAndServe("localhost:8000", nil)

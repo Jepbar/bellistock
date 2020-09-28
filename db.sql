@@ -11,7 +11,6 @@ CREATE TABLE users(
     is_it_deleted  VARCHAR(100) DEFAULT 'False'
 );
 
-
 CREATE TABLE workers(
     worker_id           SERIAL,
     fullname            VARCHAR(100)             NOT NULL,
@@ -39,7 +38,7 @@ CREATE TABLE stores(
 CREATE TABLE categories(
     categorie_id       SERIAL,
     name               VARCHAR(100)     NOT NULL,
-    parent_categorie   VARCHAR(100)
+    parent_categorie   VARCHAR(100) default ''
 );
 
 CREATE TABLE customers(
