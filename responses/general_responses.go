@@ -35,6 +35,7 @@ type Customers struct {
 	GirdeyjisiTmt int    `json:"girdeyjisi_tmt"`
 	GirdeyjisiUsd int    `json:"girdeyjisi_usd"`
 }
+
 type Categories struct {
 	Categorieid     int    `json:"categorieid"`
 	Name            string `json:"name"`
@@ -115,6 +116,18 @@ type Incomes struct {
 	Date               string `json:"date"`
 	Customer           string `json:"customer"`
 	Project            string `json:"project"`
+}
+
+type TotalIncome struct {
+	TotalIncomeTmt int        `json:"total_income_tmt"`
+	TotalIncomeUsd int        `json:"total_income_usd"`
+	List           []*Incomes `json:"list"`
+}
+
+type TotalOutcome struct {
+	TotalOutcomeTmt int         `json:"total_outcome_tmt"`
+	TotalOutcomeUsd int         `json:"total_outcome_usd"`
+	List            []*Outcomes `json:"list"`
 }
 
 type Outcomes struct {

@@ -20,6 +20,7 @@ const (
 	sqlSelectUsername  = `select username from users where user_id = $1`
 	sqlSelectcategorie = `select name from categories where categorie_id = $1`
 	sqlSelectCustomer  = `select name from customers where customer_id = $1`
+	sqlSelectWorker    = `select fullname from workers where worker_id = $1`
 )
 
 func Hash(x string) string {
@@ -65,6 +66,22 @@ func Ascii(x string) bool {
 
 }
 
+func VerifyAccessToken(token string) (string, error) {
+
+	claims := jwt.MapClaims{}
+	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte("jdnfksdmfksd"), nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	username := fmt.Sprintf("%v", claims["username"])
+
+	return username, err
+}
+
 func CreateToken(username string) (string, string, error) {
 	var err error
 	//Creating Access Token
@@ -72,7 +89,7 @@ func CreateToken(username string) (string, string, error) {
 	atClaims := jwt.MapClaims{}
 	atClaims["authorized"] = true
 	atClaims["username"] = username
-	atClaims["exp"] = time.Now().Add(time.Minute * 1500).Unix()
+	atClaims["exp"] = time.Now().Add(time.Minute * 1000).Unix()
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	token, err := at.SignedString([]byte(os.Getenv("ACCESS_SECRET")))
 	if err != nil {
@@ -97,32 +114,6 @@ func ExtractToken(r *http.Request) string {
 		return strArr[1]
 	}
 	return ""
-}
-
-func VerifyToken(r *http.Request) (*jwt.Token, error) {
-	tokenString := ExtractToken(r)
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(os.Getenv("ACCESS_SECRET")), nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return token, nil
-}
-
-func TokenValid(r *http.Request) error {
-	token, err := VerifyToken(r)
-	if err != nil {
-		return err
-	}
-	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
-		return err
-
-	}
-	return nil
 }
 
 func TokenData(r *http.Request) string {
@@ -207,6 +198,23 @@ func SelectCustomer(x int) string {
 		os.Exit(12)
 	}
 	return Customer
+}
+
+func SelectWorker(x int) string {
+	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1000)
+	}
+	defer conn.Close(context.Background())
+
+	var Worker string
+	err = conn.QueryRow(context.Background(), sqlSelectWorker, x).Scan(&Worker)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(12)
+	}
+	return Worker
 }
 
 func ChangeStringToDate(x string) time.Time {

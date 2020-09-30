@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"stock/function"
+	"stock/responses"
 	"strconv"
 
 	"github.com/jackc/pgx"
@@ -32,19 +33,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	x := function.Hash(password)
 
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
+	token := function.ExtractToken(r)
+	adder, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
-	}
-
-	adder := function.TokenData(r)
 
 	if len(x) > 7 && function.Ascii(x) == true {
 		conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -75,6 +70,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 	}
 
+	responses.SendResponse(w, err, nil, nil)
+
 }
 
 func CreateStore(w http.ResponseWriter, r *http.Request) {
@@ -83,19 +80,13 @@ func CreateStore(w http.ResponseWriter, r *http.Request) {
 
 	intParentStoreID, _ := strconv.Atoi(ParentStoreid)
 
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
+	token := function.ExtractToken(r)
+	adder, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
-	}
-
-	adder := function.TokenData(r)
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
 	if err != nil {
@@ -119,6 +110,7 @@ func CreateStore(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
 		os.Exit(100)
 	}
+	responses.SendResponse(w, err, nil, nil)
 
 }
 
@@ -126,19 +118,13 @@ func CreateCustomer(w http.ResponseWriter, r *http.Request) {
 	CustomerName := r.FormValue("name")
 	note := r.FormValue("note")
 
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
+	token := function.ExtractToken(r)
+	adder, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
-	}
-
-	adder := function.TokenData(r)
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
 	if err != nil {
@@ -163,24 +149,20 @@ func CreateCustomer(w http.ResponseWriter, r *http.Request) {
 		os.Exit(104)
 	}
 
+	responses.SendResponse(w, err, nil, nil)
+
 }
 
 func CreateCategorie(w http.ResponseWriter, r *http.Request) {
 	CategorieName := r.FormValue("name")
 
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
+	token := function.ExtractToken(r)
+	username, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
-	}
-
-	adder := function.TokenData(r)
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
 	if err != nil {
@@ -189,7 +171,7 @@ func CreateCategorie(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	ID := function.SelectUserID(adder)
+	ID := function.SelectUserID(username)
 
 	var n string
 	err = conn.QueryRow(context.Background(), sqlInsertCategorie, CategorieName).Scan(&n)
@@ -203,6 +185,8 @@ func CreateCategorie(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
 		os.Exit(104)
 	}
+
+	responses.SendResponse(w, err, nil, nil)
 
 }
 
@@ -220,19 +204,13 @@ func CreateWorker(w http.ResponseWriter, r *http.Request) {
 
 	intSalary, _ := strconv.Atoi(salary)
 
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
+	token := function.ExtractToken(r)
+	adder, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
-	}
-
-	adder := function.TokenData(r)
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
 	if err != nil {
@@ -260,4 +238,6 @@ func CreateWorker(w http.ResponseWriter, r *http.Request) {
 	if rows1 == nil {
 		fmt.Println(rows1)
 	}
+
+	responses.SendResponse(w, err, nil, nil)
 }

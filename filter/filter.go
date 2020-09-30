@@ -24,18 +24,13 @@ func FilterWorkers(w http.ResponseWriter, r *http.Request) {
 
 	sqlFilterWorkers, err := function.GenerateSqlFilterWorkers(filter)
 
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
+	token := function.ExtractToken(r)
+	_, err1 := function.VerifyAccessToken(token)
+	if err1 != nil {
+		err1 = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
-	}
-
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
@@ -82,16 +77,12 @@ func FilterMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 
 	sqlFilterMoneyTransfers, err := function.GenerateSqlFilterMoneyTransfers(filter)
 
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
-	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
+	token := function.ExtractToken(r)
+	_, err1 := function.VerifyAccessToken(token)
+	if err1 != nil {
+		err1 = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -152,18 +143,13 @@ func FilterIncomes(w http.ResponseWriter, r *http.Request) {
 
 	sqlFilterIncome, err := function.GenerateSqlFilterIncomes(filter)
 
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
+	token := function.ExtractToken(r)
+	_, err1 := function.VerifyAccessToken(token)
+	if err1 != nil {
+		err1 = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
-	}
-
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
@@ -217,16 +203,12 @@ func FilterOutcomes(w http.ResponseWriter, r *http.Request) {
 
 	sqlFilterOutcome, err := function.GenerateSqlFilterOutcomes(filter)
 
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
-	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
+	token := function.ExtractToken(r)
+	_, err1 := function.VerifyAccessToken(token)
+	if err1 != nil {
+		err1 = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -280,18 +262,13 @@ func FilterBetweenStores(w http.ResponseWriter, r *http.Request) {
 
 	sqlFilterBetweenStores, err := function.GenerateSqlFilterTransferBetweenStores(filter)
 
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
+	token := function.ExtractToken(r)
+	_, err1 := function.VerifyAccessToken(token)
+	if err1 != nil {
+		err1 = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
-	}
-
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)

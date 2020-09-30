@@ -20,9 +20,10 @@ CREATE TABLE workers(
     phone               VARCHAR(100)             NOT NULL,
     home_addres         VARCHAR(100)             NOT NULL,
     home_phone          VARCHAR(100)             NOT NULL,
-    email               VARCHAR(100)             NOT NULL,
+    email               VARCHAR(100)             NOT NULL,   
     file_name           VARCHAR(100),
-    note                VARCHAR(250)
+    note                VARCHAR(250),
+    is_it_deleted       VARCHAR(100)             DEFAULT 'False'
 );
 
 CREATE TABLE stores(
@@ -38,7 +39,8 @@ CREATE TABLE stores(
 CREATE TABLE categories(
     categorie_id       SERIAL,
     name               VARCHAR(100)     NOT NULL,
-    parent_categorie   VARCHAR(100) default ''
+    parent_categorie   VARCHAR(100) DEFAULT '',
+    is_it_deleted      VARCHAR(100) DEFAULT 'False'
 );
 
 CREATE TABLE customers(
@@ -97,6 +99,15 @@ CREATE TABLE last_modifications(
     create_ts TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 
 );
+
+CREATE TABLE income_outcome(
+    id                 SERIAL,
+    total_income_tmt   INT        DEFAULT 0,
+    total_income_usd   INT        DEFAULT 0,
+    total_outcome_tmt  INT        DEFAULT 0,
+    total_outcome_usd  INT        DEFAULT 0
+
+)
 
 
 

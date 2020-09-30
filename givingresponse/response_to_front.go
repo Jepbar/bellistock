@@ -21,25 +21,23 @@ const (
 	sqlUpdateActions               = `update last_modifications set is_it_seen = $1 where id = $2`
 	sqlSelectCustomer              = `select customer_id, name, girdeyjisi_tmt, girdeyjisi_usd from customers where is_it_deleted = 'False'`
 	sqlSelectTransferBetweenStores = `select id, user_id, from_store_name, to_store_name, total_payment_amount, currency, type_of_account, date from transfers_between_stores`
-	sqlSelectWorkers               = `select worker_id , fullname, wezipesi, salary, degisli_dukany from workers`
+	sqlSelectWorkers               = `select worker_id , fullname, wezipesi, salary, degisli_dukany from workers where is_it_deleted = 'False'`
 	sqlSelectMoneyTransfers        = `select m.id, s.name, m.type_of_transfer, m.user_id, m.type_of_account, m.total_payment_amount, m.currency, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id`
 	sqlSelectIncomes               = `select m.id, s.name, m.customer, m.project, m.type_of_account, m.total_payment_amount, m.currency, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id where m.type_of_transfer = 'girdi'`
 	sqlSelectOutcomes              = `select m.id, s.name, m.money_gone_to, m.total_payment_amount, m.currency, m.type_of_account, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id where m.type_of_transfer = 'cykdy'`
-	sqlSelectCategories            = `select categorie_id, name, parent_categorie from categories`
+	sqlSelectCategories            = `select categorie_id, name, parent_categorie from categories where is_it_deleted = 'False'`
+	sqlSelectTotalIncome           = `select total_income_tmt , total_income_usd from income_outcome where id = 1`
+	sqlSelectTotalOutcome          = `select total_outcome_tmt , total_outcome_usd from income_outcome where id = 1`
 )
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
-	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
+	token := function.ExtractToken(r)
+	_, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -74,16 +72,12 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 
 func GetStores(w http.ResponseWriter, r *http.Request) {
 
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
-	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
+	token := function.ExtractToken(r)
+	_, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -146,16 +140,12 @@ func GetLastActions(w http.ResponseWriter, r *http.Request) {
 	intLimit, _ := strconv.Atoi(limit)
 	intOffset, _ := strconv.Atoi(offset)
 
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
-	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
+	token := function.ExtractToken(r)
+	_, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -215,16 +205,12 @@ func GetLastActions(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetCustomers(w http.ResponseWriter, r *http.Request) {
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
-	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
+	token := function.ExtractToken(r)
+	_, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -257,16 +243,13 @@ func GetCustomers(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetCategories(w http.ResponseWriter, r *http.Request) {
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
-	}
 
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
+	token := function.ExtractToken(r)
+	_, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -297,16 +280,12 @@ func GetCategories(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTransferBetweenStores(w http.ResponseWriter, r *http.Request) {
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
-	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
+	token := function.ExtractToken(r)
+	_, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -344,16 +323,12 @@ func GetTransferBetweenStores(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWorkers(w http.ResponseWriter, r *http.Request) {
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
-	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
+	token := function.ExtractToken(r)
+	_, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -386,16 +361,12 @@ func GetWorkers(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetMoneyTransfers(w http.ResponseWriter, r *http.Request) {
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
-	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
+	token := function.ExtractToken(r)
+	_, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -435,16 +406,12 @@ func GetMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetIncomes(w http.ResponseWriter, r *http.Request) {
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
-	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
+	token := function.ExtractToken(r)
+	_, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -453,6 +420,13 @@ func GetIncomes(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 	defer conn.Close(context.Background())
+
+	var tmt int
+	var usd int
+	err1 := conn.QueryRow(context.Background(), sqlSelectTotalIncome).Scan(&tmt, &usd)
+	if err1 != nil {
+		fmt.Println("erroro")
+	}
 
 	rows, err := conn.Query(context.Background(), sqlSelectIncomes)
 	defer rows.Close()
@@ -474,23 +448,28 @@ func GetIncomes(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	item := List
+	ListOfTotalIncome := make([]*responses.TotalIncome, 0)
+	total := &responses.TotalIncome{}
+
+	total.TotalIncomeTmt = tmt
+	total.TotalIncomeUsd = usd
+
+	total.List = List
+
+	ListOfTotalIncome = append(ListOfTotalIncome, total)
+
+	item := ListOfTotalIncome
 
 	responses.SendResponse(w, err, item, nil)
-
 }
 
 func GetOutcomes(w http.ResponseWriter, r *http.Request) {
-	error2 := function.TokenValid(r)
-	if error2 != nil {
-		fmt.Println("Time is over!")
-		os.Exit(112)
-	}
-
-	_, error1 := function.VerifyToken(r)
-	if error1 != nil {
-		fmt.Println("It is not mine!")
-		os.Exit(111)
+	token := function.ExtractToken(r)
+	_, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
 	}
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -499,6 +478,13 @@ func GetOutcomes(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 	defer conn.Close(context.Background())
+
+	var tmt int
+	var usd int
+	err1 := conn.QueryRow(context.Background(), sqlSelectTotalOutcome).Scan(&tmt, &usd)
+	if err1 != nil {
+		fmt.Println("erroro")
+	}
 
 	rows, err := conn.Query(context.Background(), sqlSelectOutcomes)
 	defer rows.Close()
@@ -521,8 +507,17 @@ func GetOutcomes(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	item := List
+	ListOfTotalOutcome := make([]*responses.TotalOutcome, 0)
+	total := &responses.TotalOutcome{}
+
+	total.TotalOutcomeTmt = tmt
+	total.TotalOutcomeUsd = usd
+
+	total.List = List
+
+	ListOfTotalOutcome = append(ListOfTotalOutcome, total)
+
+	item := ListOfTotalOutcome
 
 	responses.SendResponse(w, err, item, nil)
-
 }
