@@ -15,8 +15,9 @@ import (
 
 const (
 	sqlSelect                      = `select user_id, username, role, email, sowalga_tmt, sowalga_usd from users where is_it_deleted = 'False'`
-	sqlSelectStore                 = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores where store_id = $1`
-	sqlSelectChildStores           = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores where parent_store_id = $1`
+	sqlSelectStore                 = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores where store_id = $1 and is_it_deleted = 'False'`
+	sqlSelectAllStore              = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores where is_it_deleted = 'False'`
+	sqlSelectChildStores           = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores where parent_store_id = $1 and is_it_deleted = 'False'`
 	sqlSelectLastActions           = `select l.id, u.username, l.action, l.message, l.create_ts, l.is_it_seen from last_modifications l inner join users u on l.user_id = u.user_id order by id desc limit $1 offset $2`
 	sqlUpdateActions               = `update last_modifications set is_it_seen = $1 where id = $2`
 	sqlSelectCustomer              = `select customer_id, name, girdeyjisi_tmt, girdeyjisi_usd from customers where is_it_deleted = 'False'`
@@ -138,6 +139,43 @@ func GetStores(w http.ResponseWriter, r *http.Request) {
 	}
 
 	item := ListofStores
+
+	responses.SendResponse(w, err, item, nil)
+}
+
+func GetAllStores(w http.ResponseWriter, r *http.Request) {
+	token := function.ExtractToken(r)
+	_, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
+	}
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	defer conn.Close(context.Background())
+
+	rows, err := conn.Query(context.Background(), sqlSelectAllStore)
+
+	defer rows.Close()
+
+	ListofAllStores := make([]*responses.Stores, 0)
+
+	for rows.Next() {
+		store := &responses.Stores{}
+		err = rows.Scan(&store.Storeid, &store.Name, &store.OverallTmt, &store.OverallUsd, &store.OwnTmt, &store.OwnUsd)
+		if err != nil {
+			fmt.Println("ERROR")
+			os.Exit(1101)
+		}
+		ListofAllStores = append(ListofAllStores, store)
+	}
+
+	item := ListofAllStores
 
 	responses.SendResponse(w, err, item, nil)
 }

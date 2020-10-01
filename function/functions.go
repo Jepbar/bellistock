@@ -15,12 +15,14 @@ import (
 )
 
 const (
-	layoutISO          = "2006-01-02"
-	sqlSelect          = `select user_id from users where username = $1`
-	sqlSelectUsername  = `select username from users where user_id = $1`
-	sqlSelectcategorie = `select name from categories where categorie_id = $1`
-	sqlSelectCustomer  = `select name from customers where customer_id = $1`
-	sqlSelectWorker    = `select fullname from workers where worker_id = $1`
+	layoutISO            = "2006-01-02"
+	sqlSelectUserid      = `select user_id from users where username = $1`
+	sqlSelectUsername    = `select username from users where user_id = $1`
+	sqlSelectcategorie   = `select name from categories where categorie_id = $1`
+	sqlSelectCustomer    = `select name from customers where customer_id = $1`
+	sqlSelectWorker      = `select fullname from workers where worker_id = $1`
+	sqlSelectStore       = `select count(name) from stores where parent_store_id = $1 and is_it_deleted = 'False'`
+	sqlSelectStoreFromID = `select name from stores where store_id = $1`
 )
 
 //--Others--//
@@ -72,6 +74,27 @@ func ChangeStringToDate(x string) time.Time {
 	date := x
 	t, _ := time.Parse(layoutISO, date)
 	return t
+}
+
+func HasItGotChild(x int) bool {
+	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1000)
+	}
+	defer conn.Close(context.Background())
+
+	var NumberOfchilds int
+	err = conn.QueryRow(context.Background(), sqlSelectStore, x).Scan(&NumberOfchilds)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(12)
+	}
+
+	if NumberOfchilds == 0 {
+		return false
+	}
+	return true
 }
 
 //---Tokens---//
@@ -153,7 +176,7 @@ func SelectUserID(x string) int {
 	defer conn.Close(context.Background())
 
 	var ID int
-	err = conn.QueryRow(context.Background(), sqlSelect, x).Scan(&ID)
+	err = conn.QueryRow(context.Background(), sqlSelectUserid, x).Scan(&ID)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
 		os.Exit(12)
@@ -227,6 +250,23 @@ func SelectWorker(x int) string {
 		os.Exit(12)
 	}
 	return Worker
+}
+
+func SelectStore(x int) string {
+	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1000)
+	}
+	defer conn.Close(context.Background())
+
+	var Storename string
+	err = conn.QueryRow(context.Background(), sqlSelectStoreFromID, x).Scan(&Storename)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(12)
+	}
+	return Storename
 }
 
 //--generating sqls--//

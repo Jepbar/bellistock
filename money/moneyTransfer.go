@@ -59,7 +59,7 @@ func IDOfStore(x string) int {
 	return storeid
 }
 
-func parentStore(x int) []int {
+func ParentStore(x int) []int {
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
@@ -238,7 +238,7 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	b := parentStore(intStoreid)
+	b := ParentStore(intStoreid)
 
 	for j := 1; j < len(b)-1; j++ {
 		if typeOfTransfer == "girdi" && nok == true {
@@ -374,8 +374,8 @@ func BetweenStores(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	c := parentStore(fromstoreid)
-	d := parentStore(tostoreid)
+	c := ParentStore(fromstoreid)
+	d := ParentStore(tostoreid)
 
 	for j := 1; j < len(c)-1; j++ {
 		if currency == "TMT" {

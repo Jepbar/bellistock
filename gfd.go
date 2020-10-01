@@ -38,6 +38,7 @@ func main() {
 	r.HandleFunc("/api/getusers", givingresponse.GetUsers)
 	r.HandleFunc("/api/getworkers", givingresponse.GetWorkers)
 	r.HandleFunc("/api/getstores", givingresponse.GetStores)
+	r.HandleFunc("/api/getallstores", givingresponse.GetAllStores)
 	r.HandleFunc("/api/gettransferstores", givingresponse.GetTransferBetweenStores)
 	r.HandleFunc("/api/getlastactions", givingresponse.GetLastActions)
 	r.HandleFunc("/api/getcustomers", givingresponse.GetCustomers)
@@ -60,6 +61,7 @@ func main() {
 	r.HandleFunc("/api/deletecustomer", delete.DeleteCustomer)
 	r.HandleFunc("/api/deleteworker", delete.DeleteWorker)
 	r.HandleFunc("/api/deletecategorie", delete.DeleteCategorie)
+	r.HandleFunc("/api/deletestore", delete.DeleteStore)
 
 	http.Handle("/", r)
 	http.ListenAndServe("localhost:8000", nil)
