@@ -43,7 +43,7 @@ const (
 )
 
 func IDOfStore(x string) int {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -60,7 +60,7 @@ func IDOfStore(x string) int {
 }
 
 func ParentStore(x int) []int {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -108,7 +108,7 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -330,7 +330,7 @@ func BetweenStores(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -451,7 +451,7 @@ func GiveMoneyToUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)

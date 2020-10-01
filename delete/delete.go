@@ -45,7 +45,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	DeleterId := function.SelectUserID(deleter)
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -81,7 +81,7 @@ func DeleteCustomer(w http.ResponseWriter, r *http.Request) {
 	}
 	DeleterId := function.SelectUserID(deleter)
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -119,7 +119,7 @@ func DeleteWorker(w http.ResponseWriter, r *http.Request) {
 
 	DeleterId := function.SelectUserID(deleter)
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -156,7 +156,7 @@ func DeleteCategorie(w http.ResponseWriter, r *http.Request) {
 
 	DeleterId := function.SelectUserID(deleter)
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -197,7 +197,7 @@ func DeleteStore(w http.ResponseWriter, r *http.Request) {
 	DeleterId := function.SelectUserID(deleter)
 	Storename := function.SelectStore(IntId)
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)

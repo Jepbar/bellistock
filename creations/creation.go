@@ -42,7 +42,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(x) > 7 && function.Ascii(x) == true {
-		conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+		conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 			os.Exit(1)
@@ -87,7 +87,7 @@ func CreateStore(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -125,7 +125,7 @@ func CreateCustomer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -163,7 +163,7 @@ func CreateCategorie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -211,7 +211,7 @@ func CreateWorker(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)

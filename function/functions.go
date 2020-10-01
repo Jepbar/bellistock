@@ -15,6 +15,7 @@ import (
 )
 
 const (
+	ConnectToDatabase    = "postgres://jepbar:bjepbar2609@localhost:5432/jepbar"
 	layoutISO            = "2006-01-02"
 	sqlSelectUserid      = `select user_id from users where username = $1`
 	sqlSelectUsername    = `select username from users where user_id = $1`
@@ -77,7 +78,7 @@ func ChangeStringToDate(x string) time.Time {
 }
 
 func HasItGotChild(x int) bool {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -168,7 +169,7 @@ func TokenData(r *http.Request) string {
 //---Selectings-//
 
 func SelectUserID(x string) int {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -185,7 +186,7 @@ func SelectUserID(x string) int {
 }
 
 func SelectUsername(x int) string {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -202,7 +203,7 @@ func SelectUsername(x int) string {
 }
 
 func SelectCategorie(x int) string {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -219,7 +220,7 @@ func SelectCategorie(x int) string {
 }
 
 func SelectCustomer(x int) string {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -236,7 +237,7 @@ func SelectCustomer(x int) string {
 }
 
 func SelectWorker(x int) string {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -253,7 +254,7 @@ func SelectWorker(x int) string {
 }
 
 func SelectStore(x int) string {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)

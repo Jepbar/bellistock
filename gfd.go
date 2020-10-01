@@ -12,6 +12,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const (
+	ConnectToDatabase = "postgres://jepbar:bjepbar2609@localhost:5432/jepbar"
+)
+
 func main() {
 	r := mux.NewRouter()
 
@@ -38,7 +42,7 @@ func main() {
 	r.HandleFunc("/api/getusers", givingresponse.GetUsers)
 	r.HandleFunc("/api/getworkers", givingresponse.GetWorkers)
 	r.HandleFunc("/api/getstores", givingresponse.GetStores)
-	r.HandleFunc("/api/getallstores", givingresponse.GetAllStores)
+	r.HandleFunc("/api/zxcvb", givingresponse.GetAllStores)
 	r.HandleFunc("/api/gettransferstores", givingresponse.GetTransferBetweenStores)
 	r.HandleFunc("/api/getlastactions", givingresponse.GetLastActions)
 	r.HandleFunc("/api/getcustomers", givingresponse.GetCustomers)
