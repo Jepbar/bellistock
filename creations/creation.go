@@ -69,7 +69,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(400)
 	}
-
 	responses.SendResponse(w, err, nil, nil)
 
 }

@@ -23,6 +23,8 @@ const (
 	sqlSelectWorker    = `select fullname from workers where worker_id = $1`
 )
 
+//--Others--//
+
 func Hash(x string) string {
 	password := []byte(x)
 	hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
@@ -65,6 +67,14 @@ func Ascii(x string) bool {
 	return false
 
 }
+
+func ChangeStringToDate(x string) time.Time {
+	date := x
+	t, _ := time.Parse(layoutISO, date)
+	return t
+}
+
+//---Tokens---//
 
 func VerifyAccessToken(token string) (string, error) {
 
@@ -131,6 +141,8 @@ func TokenData(r *http.Request) string {
 
 	return username
 }
+
+//---Selectings-//
 
 func SelectUserID(x string) int {
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
@@ -217,12 +229,7 @@ func SelectWorker(x int) string {
 	return Worker
 }
 
-func ChangeStringToDate(x string) time.Time {
-
-	date := x
-	t, _ := time.Parse(layoutISO, date)
-	return t
-}
+//--generating sqls--//
 
 func GenerateSqlFilterWorkers(filter responses.Filterworkers) (sql string, err error) {
 	sql = `select worker_id , fullname, wezipesi, salary, degisli_dukany from workers`

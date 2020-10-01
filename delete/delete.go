@@ -170,3 +170,7 @@ func DeleteCategorie(w http.ResponseWriter, r *http.Request) {
 
 	responses.SendResponse(w, err, nil, nil)
 }
+
+func DeleteStore(w http.ResponseWriter, r *http.Request) {
+
+}

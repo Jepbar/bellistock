@@ -42,7 +42,7 @@ type Categories struct {
 	ParentCategorie string `json:"parent_categorie"`
 }
 
-type Stores1 struct {
+type Stores struct {
 	Storeid    int    `json:"store_id"`
 	Name       string `json:"store_name"`
 	OverallTmt int    `json:"overall_tmt"`
@@ -51,14 +51,14 @@ type Stores1 struct {
 	OwnUsd     int    `json:"own_usd"`
 }
 
-type Stores struct {
-	Storeid    int        `json:"store_id"`
-	Name       string     `json:"store_name"`
-	OverallTmt int        `json:"overall_tmt"`
-	OverallUsd int        `json:"overall_usd"`
-	OwnTmt     int        `json:"own_tmt"`
-	OwnUsd     int        `json:"own_usd"`
-	Childs     []*Stores1 `json:"childs"`
+type Stores1 struct {
+	Storeid    int       `json:"store_id"`
+	Name       string    `json:"store_name"`
+	OverallTmt int       `json:"overall_tmt"`
+	OverallUsd int       `json:"overall_usd"`
+	OwnTmt     int       `json:"own_tmt"`
+	OwnUsd     int       `json:"own_usd"`
+	Childs     []*Stores `json:"childs"`
 }
 
 type LastActions struct {

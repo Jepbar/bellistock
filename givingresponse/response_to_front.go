@@ -15,8 +15,8 @@ import (
 
 const (
 	sqlSelect                      = `select user_id, username, role, email, sowalga_tmt, sowalga_usd from users where is_it_deleted = 'False'`
-	sqlSelectStores                = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores`
-	sqlSelectChildStore            = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores where parent_store_id = $1`
+	sqlSelectStore                 = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores where store_id = $1`
+	sqlSelectChildStores           = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores where parent_store_id = $1`
 	sqlSelectLastActions           = `select l.id, u.username, l.action, l.message, l.create_ts, l.is_it_seen from last_modifications l inner join users u on l.user_id = u.user_id order by id desc limit $1 offset $2`
 	sqlUpdateActions               = `update last_modifications set is_it_seen = $1 where id = $2`
 	sqlSelectCustomer              = `select customer_id, name, girdeyjisi_tmt, girdeyjisi_usd from customers where is_it_deleted = 'False'`
@@ -80,6 +80,15 @@ func GetStores(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	Id := r.FormValue("id")
+	k := 0
+	if len(Id) > 0 {
+		intId, _ := strconv.Atoi(Id)
+		k = intId
+	} else {
+		k = 1
+	}
+
 	conn, err := pgx.Connect(context.Background(), os.Getenv("postgres://jepbar:bjepbar2609@localhost:5432/jepbar"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
@@ -87,13 +96,13 @@ func GetStores(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	rows, err := conn.Query(context.Background(), sqlSelectStores)
+	rows, err := conn.Query(context.Background(), sqlSelectStore, k)
 
 	defer rows.Close()
 
-	ListofStores := make([]*responses.Stores, 0)
+	ListofStores := make([]*responses.Stores1, 0)
 	for rows.Next() {
-		store := &responses.Stores{}
+		store := &responses.Stores1{}
 		err = rows.Scan(&store.Storeid, &store.Name, &store.OverallTmt, &store.OverallUsd, &store.OwnTmt, &store.OwnUsd)
 		if err != nil {
 			fmt.Println("ERROR")
@@ -107,15 +116,15 @@ func GetStores(w http.ResponseWriter, r *http.Request) {
 		}
 		defer conn.Close(context.Background())
 
-		rows1, err1 := conn.Query(context.Background(), sqlSelectChildStore, store.Storeid)
+		rows1, err1 := conn.Query(context.Background(), sqlSelectChildStores, k)
 		if err1 != nil {
 			fmt.Println("ERRORRRRR")
 		}
 
-		ListofChilds := make([]*responses.Stores1, 0)
+		ListofChilds := make([]*responses.Stores, 0)
 
 		for rows1.Next() {
-			child := &responses.Stores1{}
+			child := &responses.Stores{}
 			err = rows1.Scan(&child.Storeid, &child.Name, &child.OverallTmt, &child.OverallUsd, &child.OwnTmt, &child.OwnUsd)
 			if err != nil {
 				fmt.Println("ERROR")
