@@ -16,6 +16,7 @@ import (
 
 const (
 	ConnectToDatabase    = "postgres://jepbar:bjepbar2609@localhost:5432/jepbar"
+	layoutISO1           = "2006-01-02 15:04:05"
 	layoutISO            = "2006-01-02"
 	sqlSelectUserid      = `select user_id from users where username = $1`
 	sqlSelectUsername    = `select username from users where user_id = $1`
@@ -96,6 +97,19 @@ func HasItGotChild(x int) bool {
 		return false
 	}
 	return true
+}
+
+func IsItAvaiableForDeletingTransfer(x time.Time) bool {
+	date := x
+	CurrentTime := time.Now()
+	StringOfDate := CurrentTime.Format("2006-01-02 15:04:05")
+	t, _ := time.Parse(layoutISO1, StringOfDate)
+	k := t.Unix() - date.Unix()
+	if k < 2592000 {
+		return true
+	}
+	return false
+
 }
 
 //---Tokens---//

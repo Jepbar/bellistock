@@ -1,4 +1,4 @@
-package delete
+package deletion
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"stock/money"
 	"stock/responses"
 	"strconv"
+	"time"
 
 	"github.com/jackc/pgx"
 )
@@ -26,6 +27,8 @@ const (
 	sqlInsertMessagetoDeleteWorker    = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly isgari sanawdan pozdy ')`
 	sqlInsertMessagetoDeleteCategorie = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly kategoriyany pozdy ')`
 	sqlInsertMessagetoDeleteStore     = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly dukany pozdy ')`
+	sqlTakeTheTimeOfTransaction       = `select create_ts from money_transfers where id = $1`
+	sqlSelectTheAmountOfTransaction   = `select total_payment_amount, currency from money_transfers where id = $1`
 )
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -233,4 +236,35 @@ func DeleteStore(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(rows1, err1)
 	}
 	responses.SendResponse(w, err, nil, nil)
+}
+
+func DeletionOfIncomeTransfer(w http.ResponseWriter, r *http.Request) {
+	Id := r.FormValue("id")
+	IntId, _ := strconv.Atoi(Id)
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(10)
+	}
+	defer conn.Close(context.Background())
+
+	var date time.Time
+	err = conn.QueryRow(context.Background(), sqlTakeTheTimeOfTransaction, IntId).Scan(&date)
+	if err != nil {
+		fmt.Println("error tmt")
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(12)
+	}
+	if function.IsItAvaiableForDeletingTransfer(date) == true {
+		var Amount int
+		var Currency string
+		err = conn.QueryRow(context.Background(), sqlSelectTheAmountOfTransaction, IntId).Scan(&Amount, &Currency)
+		if err != nil {
+			fmt.Println("error tmt")
+			fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+			os.Exit(12)
+		}
+
+	}
 }

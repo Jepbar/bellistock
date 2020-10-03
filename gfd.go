@@ -4,16 +4,12 @@ import (
 	"net/http"
 	"stock/authentication"
 	"stock/creations"
-	"stock/delete"
+	"stock/deletion"
 	"stock/filter"
 	"stock/givingresponse"
 	"stock/money"
 
 	"github.com/gorilla/mux"
-)
-
-const (
-	ConnectToDatabase = "postgres://jepbar:bjepbar2609@localhost:5432/jepbar"
 )
 
 func main() {
@@ -42,7 +38,7 @@ func main() {
 	r.HandleFunc("/api/getusers", givingresponse.GetUsers)
 	r.HandleFunc("/api/getworkers", givingresponse.GetWorkers)
 	r.HandleFunc("/api/getstores", givingresponse.GetStores)
-	r.HandleFunc("/api/zxcvb", givingresponse.GetAllStores)
+	r.HandleFunc("/api/getallstores", givingresponse.GetAllStores)
 	r.HandleFunc("/api/gettransferstores", givingresponse.GetTransferBetweenStores)
 	r.HandleFunc("/api/getlastactions", givingresponse.GetLastActions)
 	r.HandleFunc("/api/getcustomers", givingresponse.GetCustomers)
@@ -61,11 +57,11 @@ func main() {
 
 	/*---Delete---*/
 
-	r.HandleFunc("/api/deleteuser", delete.DeleteUser)
-	r.HandleFunc("/api/deletecustomer", delete.DeleteCustomer)
-	r.HandleFunc("/api/deleteworker", delete.DeleteWorker)
-	r.HandleFunc("/api/deletecategorie", delete.DeleteCategorie)
-	r.HandleFunc("/api/deletestore", delete.DeleteStore)
+	r.HandleFunc("/api/deleteuser", deletion.DeleteUser)
+	r.HandleFunc("/api/deletecustomer", deletion.DeleteCustomer)
+	r.HandleFunc("/api/deleteworker", deletion.DeleteWorker)
+	r.HandleFunc("/api/deletecategorie", deletion.DeleteCategorie)
+	r.HandleFunc("/api/deletestore", deletion.DeleteStore)
 
 	http.Handle("/", r)
 	http.ListenAndServe("localhost:8000", nil)

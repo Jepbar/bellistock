@@ -33,7 +33,8 @@ CREATE TABLE stores(
     jemi_hasap_tmt          INT    DEFAULT 0         NOT NULL,
     jemi_hasap_usd          INT    DEFAULT 0         NOT NULL,
     shahsy_hasap_tmt        INT    DEFAULT 0         NOT NULL,
-    shahsy_hasap_usd        INT    DEFAULT 0         NOT NULL
+    shahsy_hasap_usd        INT    DEFAULT 0         NOT NULL,
+    is_it_deleted           VARCHAR(100)             DEFAULT 'False'
 );
 
 CREATE TABLE categories(
