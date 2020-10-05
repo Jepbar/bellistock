@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"stock/config"
 	"stock/function"
 	"stock/responses"
 	"strconv"
@@ -43,7 +44,8 @@ const (
 )
 
 func IDOfStore(x string) int {
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -60,7 +62,8 @@ func IDOfStore(x string) int {
 }
 
 func ParentStore(x int) []int {
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -108,7 +111,8 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -329,8 +333,8 @@ func BetweenStores(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -450,8 +454,8 @@ func GiveMoneyToUser(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)

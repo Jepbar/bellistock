@@ -1,0 +1,8 @@
+{
+    "db_connection":"postgres://jepbar:bjepbar2609@localhost:5432/jepbar",
+    "listen_and_serve" : "localhost:8000",
+    "secret_of_jwt": "jepbarasgarov",
+    "valid" : 5184000
+
+
+}

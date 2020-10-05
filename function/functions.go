@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"stock/config"
 	"stock/responses"
 	"strings"
 	"time"
@@ -15,7 +16,6 @@ import (
 )
 
 const (
-	ConnectToDatabase    = "postgres://jepbar:bjepbar2609@localhost:5432/jepbar"
 	layoutISO1           = "2006-01-02 15:04:05"
 	layoutISO            = "2006-01-02"
 	sqlSelectUserid      = `select user_id from users where username = $1`
@@ -79,7 +79,8 @@ func ChangeStringToDate(x string) time.Time {
 }
 
 func HasItGotChild(x int) bool {
-	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -100,12 +101,13 @@ func HasItGotChild(x int) bool {
 }
 
 func IsItAvaiableForDeletingTransfer(x time.Time) bool {
+	conf := config.ReadJsonFile()
 	date := x
 	CurrentTime := time.Now()
 	StringOfDate := CurrentTime.Format("2006-01-02 15:04:05")
 	t, _ := time.Parse(layoutISO1, StringOfDate)
 	k := t.Unix() - date.Unix()
-	if k < 2592000 {
+	if k < conf.Validation {
 		return true
 	}
 	return false
@@ -115,10 +117,10 @@ func IsItAvaiableForDeletingTransfer(x time.Time) bool {
 //---Tokens---//
 
 func VerifyAccessToken(token string) (string, error) {
-
+	conf := config.ReadJsonFile()
 	claims := jwt.MapClaims{}
 	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte("jdnfksdmfksd"), nil
+		return []byte(conf.SecretOfJwt), nil
 	})
 
 	if err != nil {
@@ -132,8 +134,9 @@ func VerifyAccessToken(token string) (string, error) {
 
 func CreateToken(username string) (string, string, error) {
 	var err error
+	conf := config.ReadJsonFile()
 	//Creating Access Token
-	os.Setenv("ACCESS_SECRET", "jdnfksdmfksd") //this should be in an env file
+	os.Setenv("ACCESS_SECRET", conf.SecretOfJwt) //this should be in an env file
 	atClaims := jwt.MapClaims{}
 	atClaims["authorized"] = true
 	atClaims["username"] = username
@@ -165,11 +168,11 @@ func ExtractToken(r *http.Request) string {
 }
 
 func TokenData(r *http.Request) string {
-
+	conf := config.ReadJsonFile()
 	tokenString := ExtractToken(r)
 	claims := jwt.MapClaims{}
 	token, _ := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte("jdnfksdmfksd"), nil
+		return []byte(conf.SecretOfJwt), nil
 	})
 	if token == nil {
 		fmt.Println("Hello")
@@ -183,7 +186,8 @@ func TokenData(r *http.Request) string {
 //---Selectings-//
 
 func SelectUserID(x string) int {
-	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -200,7 +204,8 @@ func SelectUserID(x string) int {
 }
 
 func SelectUsername(x int) string {
-	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -217,7 +222,8 @@ func SelectUsername(x int) string {
 }
 
 func SelectCategorie(x int) string {
-	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -234,7 +240,8 @@ func SelectCategorie(x int) string {
 }
 
 func SelectCustomer(x int) string {
-	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -251,7 +258,8 @@ func SelectCustomer(x int) string {
 }
 
 func SelectWorker(x int) string {
-	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -268,7 +276,8 @@ func SelectWorker(x int) string {
 }
 
 func SelectStore(x int) string {
-	conn, err := pgx.Connect(context.Background(), os.Getenv(ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)

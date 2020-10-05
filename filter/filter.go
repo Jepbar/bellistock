@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"stock/config"
 	"stock/function"
 	"stock/responses"
 	"time"
@@ -32,7 +33,8 @@ func FilterWorkers(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -85,8 +87,8 @@ func FilterMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -151,7 +153,8 @@ func FilterIncomes(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -211,8 +214,8 @@ func FilterOutcomes(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -270,7 +273,8 @@ func FilterBetweenStores(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)

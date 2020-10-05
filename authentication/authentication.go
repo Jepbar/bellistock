@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"stock/config"
 	"stock/function"
 	"stock/responses"
 
@@ -20,8 +21,8 @@ const (
 func Login(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
-
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)

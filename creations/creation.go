@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"stock/config"
 	"stock/function"
 	"stock/responses"
 	"strconv"
@@ -40,9 +41,9 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-
+	conf := config.ReadJsonFile()
 	if len(x) > 7 && function.Ascii(x) == true {
-		conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+		conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 			os.Exit(1)
@@ -78,6 +79,7 @@ func CreateStore(w http.ResponseWriter, r *http.Request) {
 	ParentStoreid := r.FormValue("parent_store_id")
 
 	intParentStoreID, _ := strconv.Atoi(ParentStoreid)
+	conf := config.ReadJsonFile()
 
 	token := function.ExtractToken(r)
 	adder, err := function.VerifyAccessToken(token)
@@ -87,7 +89,7 @@ func CreateStore(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)
@@ -116,7 +118,7 @@ func CreateStore(w http.ResponseWriter, r *http.Request) {
 func CreateCustomer(w http.ResponseWriter, r *http.Request) {
 	CustomerName := r.FormValue("name")
 	note := r.FormValue("note")
-
+	conf := config.ReadJsonFile()
 	token := function.ExtractToken(r)
 	adder, err := function.VerifyAccessToken(token)
 	if err != nil {
@@ -125,7 +127,7 @@ func CreateCustomer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -162,8 +164,8 @@ func CreateCategorie(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -210,8 +212,8 @@ func CreateWorker(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-
-	conn, err := pgx.Connect(context.Background(), os.Getenv(function.ConnectToDatabase))
+	conf := config.ReadJsonFile()
+	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1000)

@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"stock/authentication"
+	"stock/config"
 	"stock/creations"
 	"stock/deletion"
 	"stock/filter"
@@ -14,6 +15,7 @@ import (
 
 func main() {
 	r := mux.NewRouter()
+	conf := config.ReadJsonFile()
 
 	/*----Login---*/
 
@@ -62,7 +64,8 @@ func main() {
 	r.HandleFunc("/api/deleteworker", deletion.DeleteWorker)
 	r.HandleFunc("/api/deletecategorie", deletion.DeleteCategorie)
 	r.HandleFunc("/api/deletestore", deletion.DeleteStore)
+	r.HandleFunc("/api/deleteincometransfer", deletion.DeletionOfIncomeTransfer)
 
 	http.Handle("/", r)
-	http.ListenAndServe("localhost:8000", nil)
+	http.ListenAndServe(conf.ListenAndServe, nil)
 }
