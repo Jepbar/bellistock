@@ -29,6 +29,12 @@ type Users struct {
 	SowalgaUsd int    `json:"sowalga_usd"`
 }
 
+type UserDataForEditing struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Role     string `json:"role"`
+}
+
 type Customers struct {
 	Customerid    int    `json:"customerid"`
 	Name          string `json:"name"`
@@ -36,10 +42,19 @@ type Customers struct {
 	GirdeyjisiUsd int    `json:"girdeyjisi_usd"`
 }
 
+type CustomerDataForEditing struct {
+	Name string `json:"name"`
+	Note string `json:"note"`
+}
+
 type Categories struct {
 	Categorieid     int    `json:"categorieid"`
 	Name            string `json:"name"`
 	ParentCategorie string `json:"parent_categorie"`
+}
+
+type CategorieDataForEditing struct {
+	Name string `json:"name"`
 }
 
 type Stores struct {
@@ -81,6 +96,18 @@ type Workers struct {
 	Salary        int    `json:"salary"`
 	Wezipesi      string `json:"wezipes"`
 	DegisliDukany string `json:"degisli_dukany"`
+}
+
+type WorkerDataForEditing struct {
+	Fullname      string `json:"fullname"`
+	Salary        int    `json:"salary"`
+	Wezipesi      string `json:"wezipes"`
+	DegisliDukany string `json:"degisli_dukany"`
+	HomePhone     string `json:"home_phone"`
+	Phone         string `json:"phone"`
+	Email         string `json:"email"`
+	HomeAddres    string `json:"home_addres`
+	Note          string `json:"note"`
 }
 
 type BetweenStores struct {

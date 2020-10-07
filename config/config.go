@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 )
 
@@ -12,12 +13,16 @@ type Config struct {
 	Validation     int64  `json:"valid"`
 }
 
-func ReadJsonFile() Config {
-	plan, err := ioutil.ReadFile("config.json")
-	if err != nil {
-		panic(err)
+var Conf Config
+
+func ReadJsonFile() {
+	var plan []byte
+	plan, err1 := ioutil.ReadFile("configuration.json")
+	if err1 != nil {
+		panic(err1)
 	}
-	var usr Config
-	err = json.Unmarshal(plan, &usr)
-	return usr
+	err := json.Unmarshal(plan, &Conf)
+	if err != nil {
+		fmt.Println(err)
+	}
 }

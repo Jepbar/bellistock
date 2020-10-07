@@ -7,15 +7,17 @@ import (
 	"stock/creations"
 	"stock/deletion"
 	"stock/filter"
+	"stock/givedataforediting"
 	"stock/givingresponse"
 	"stock/money"
+	"stock/update"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
+	config.ReadJsonFile()
 	r := mux.NewRouter()
-	conf := config.ReadJsonFile()
 
 	/*----Login---*/
 
@@ -65,7 +67,23 @@ func main() {
 	r.HandleFunc("/api/deletecategorie", deletion.DeleteCategorie)
 	r.HandleFunc("/api/deletestore", deletion.DeleteStore)
 	r.HandleFunc("/api/deleteincometransfer", deletion.DeletionOfIncomeTransfer)
+	r.HandleFunc("/api/deleteoutcometransfer", deletion.DeletionOfOutcomeTransfer)
+
+	/*----GiveDataForEditing----*/
+
+	r.HandleFunc("/api/givedataaboutuser", givedataforediting.GiveDataAboutUserForEditing)
+	r.HandleFunc("/api/givedataaboutworker", givedataforediting.GiveDataAboutWorkerForEditing)
+	r.HandleFunc("/api/givedataaboutcustomer", givedataforediting.GiveDataAboutCustomerForediting)
+	r.HandleFunc("/api/givedataaboutcategorie", givedataforediting.GiveDataAboutcategorieForEditing)
+
+	/*----UpdatingData----*/
+
+	r.HandleFunc("/api/updateuser", update.UpdateUserData)
+	r.HandleFunc("/api/updateuserspassword", update.UpdatePasswordOfUser)
+	r.HandleFunc("/api/updateworker", update.UpdateWorkerData)
+	r.HandleFunc("/api/updatecustomer", update.UpdateCustomerData)
+	r.HandleFunc("/api/updatecategorie", update.UpdateCategorieData)
 
 	http.Handle("/", r)
-	http.ListenAndServe(conf.ListenAndServe, nil)
+	http.ListenAndServe(config.Conf.ListenAndServe, nil)
 }

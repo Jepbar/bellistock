@@ -44,8 +44,7 @@ const (
 )
 
 func IDOfStore(x string) int {
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -62,8 +61,8 @@ func IDOfStore(x string) int {
 }
 
 func ParentStore(x int) []int {
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -111,8 +110,7 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -333,8 +331,8 @@ func BetweenStores(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -454,8 +452,8 @@ func GiveMoneyToUser(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)

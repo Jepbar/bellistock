@@ -41,8 +41,8 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -90,8 +90,8 @@ func GetStores(w http.ResponseWriter, r *http.Request) {
 	} else {
 		k = 1
 	}
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -111,7 +111,7 @@ func GetStores(w http.ResponseWriter, r *http.Request) {
 			os.Exit(1101)
 		}
 
-		conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+		conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 			os.Exit(1)
@@ -152,8 +152,8 @@ func GetAllStores(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -195,8 +195,8 @@ func GetLastActions(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -229,7 +229,7 @@ func GetLastActions(w http.ResponseWriter, r *http.Request) {
 			action.LastStatus = "It has already seen"
 		}
 
-		conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+		conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 			os.Exit(1)
@@ -260,8 +260,8 @@ func GetCustomers(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -299,8 +299,8 @@ func GetCategories(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -335,8 +335,8 @@ func GetTransferBetweenStores(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -378,8 +378,8 @@ func GetWorkers(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -416,8 +416,8 @@ func GetMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -461,8 +461,8 @@ func GetIncomes(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -519,8 +519,8 @@ func GetOutcomes(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)

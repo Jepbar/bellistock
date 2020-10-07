@@ -16,31 +16,39 @@ import (
 )
 
 const (
-	sqlDeleteUser                                      = `update users set is_it_deleted = 'True' where user_id = $1`
-	sqlDeleteCustomer                                  = `update customers set is_it_deleted = 'True' where customer_id = $1`
-	sqlDeleteWorker                                    = `update workers set is_it_deleted = 'True' where worker_id = $1`
-	sqlDeleteCategorie                                 = `update categories set is_it_deleted = 'True' where categorie_id = $1`
-	sqlDeleteStore                                     = `update stores set is_it_deleted = 'True' where store_id = $1`
-	sqlUpdateParentStoresAccount                       = `update stores set jemi_hasap_tmt = jemi_hasap_tmt - $1, jemi_hasap_usd = jemi_hasap_usd - $2 where store_id = $3`
-	sqlSelectMoneyFromDeletedStore                     = `select shahsy_hasap_tmt, shahsy_hasap_usd from stores where store_id = $1`
-	sqlInsertMessagetoDeleteUser                       = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly useri sanawdan pozdy ')`
-	sqlInsertMessagetoDeleteCustomer                   = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly musderini sanawdan pozdy ')`
-	sqlInsertMessagetoDeleteWorker                     = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly isgari sanawdan pozdy ')`
-	sqlInsertMessagetoDeleteCategorie                  = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly kategoriyany pozdy ')`
-	sqlInsertMessagetoDeleteStore                      = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly dukany pozdy ')`
-	sqlTakeTheTimeOfTransaction                        = `select create_ts from money_transfers where id = $1`
-	sqlSelectTheTransaction                            = `select total_payment_amount, currency, store_id, customer from money_transfers where id = $1`
-	sqlReturnTheMoneyTMT                               = `update stores set jemi_hasap_tmt = jemi_hasap_tmt - $1 , shahsy_hasap_tmt = shahsy_hasap_tmt - $2 where store_id = $3`
-	sqlReturnTheMoneyUSD                               = `update stores set jemi_hasap_usd = jemi_hasap_usd - $1 , shahsy_hasap_usd = shahsy_hasap_usd - $2 where store_id = $3`
-	sqlGiveBackMoneyToCustomerTMT                      = `update customers set girdeyjisi_tmt = girdeyjisi_tmt - $1 where name = $2`
-	sqlGiveBackMoneyToCustomerUSD                      = `update customers set girdeyjisi_usd = girdeyjisi_usd - $1 where name = $2`
-	sqlReturningMoneyFromparentsTMT                    = `update stores set jemi_hasap_tmt = jemi_hasap_tmt - $1  where store_id = $2`
-	sqlReturningMoneyFromparentsUSD                    = `update stores set jemi_hasap_usd = jemi_hasap_usd - $1  where store_id = $2`
-	sqlUpdateTotalIncomeTMT                            = `update income_outcome set total_income_tmt = total_income_tmt - $1 where id = 1`
-	sqlUpdateTotalIncomeUSD                            = `update income_outcome set total_income_usd = total_income_usd - $1 where id = 1`
-	sqlInsertMessageToDeleteIncomeTransfer             = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' dukanyna bolan ' || $4 || $5 || ' pul girisini yzyna gaytardy ')`
-	sqlInsertMessageToDeleteIncomeTransferNOTCONVERTED = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' dukanyna bolan ' || $4 || $5 || ' pul girisini sanawdan pozdy ')`
-	sqlDeleteIncomeTransfer                            = `delete from money_transfers where id = $1`
+	sqlDeleteUser                           = `update users set is_it_deleted = 'True' where user_id = $1`
+	sqlDeleteCustomer                       = `update customers set is_it_deleted = 'True' where customer_id = $1`
+	sqlDeleteWorker                         = `update workers set is_it_deleted = 'True' where worker_id = $1`
+	sqlDeleteCategorie                      = `update categories set is_it_deleted = 'True' where categorie_id = $1`
+	sqlDeleteStore                          = `update stores set is_it_deleted = 'True' where store_id = $1`
+	sqlUpdateParentStoresAccount            = `update stores set jemi_hasap_tmt = jemi_hasap_tmt - $1, jemi_hasap_usd = jemi_hasap_usd - $2 where store_id = $3`
+	sqlSelectMoneyFromDeletedStore          = `select shahsy_hasap_tmt, shahsy_hasap_usd from stores where store_id = $1`
+	sqlInsertMessagetoDeleteUser            = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly useri sanawdan pozdy ')`
+	sqlInsertMessagetoDeleteCustomer        = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly musderini sanawdan pozdy ')`
+	sqlInsertMessagetoDeleteWorker          = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly isgari sanawdan pozdy ')`
+	sqlInsertMessagetoDeleteCategorie       = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly kategoriyany pozdy ')`
+	sqlInsertMessagetoDeleteStore           = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly dukany pozdy ')`
+	sqlTakeTheTimeOfTransaction             = `select create_ts from money_transfers where id = $1`
+	sqlSelectTheTransaction                 = `select total_payment_amount, currency, store_id, customer, user_id from money_transfers where id = $1`
+	sqlReturnTheMoneyTMT                    = `update stores set jemi_hasap_tmt = jemi_hasap_tmt - $1 , shahsy_hasap_tmt = shahsy_hasap_tmt - $2 where store_id = $3`
+	sqlReturnTheMoneyUSD                    = `update stores set jemi_hasap_usd = jemi_hasap_usd - $1 , shahsy_hasap_usd = shahsy_hasap_usd - $2 where store_id = $3`
+	sqlGiveBackTheMoneyTMT                  = `update stores set jemi_hasap_tmt = jemi_hasap_tmt + $1 , shahsy_hasap_tmt = shahsy_hasap_tmt + $2 where store_id = $3`
+	sqlGiveBackTheMoneyUSD                  = `update stores set jemi_hasap_usd = jemi_hasap_usd + $1 , shahsy_hasap_usd = shahsy_hasap_usd + $2 where store_id = $3`
+	sqlGiveBackMoneyToCustomerTMT           = `update customers set girdeyjisi_tmt = girdeyjisi_tmt - $1 where name = $2`
+	sqlGiveBackMoneyToCustomerUSD           = `update customers set girdeyjisi_usd = girdeyjisi_usd - $1 where name = $2`
+	sqlGiveBackMoneyToUserTMT               = `update users set sowalga_tmt = sowalga_tmt + $1 where user_id = $2`
+	sqlGiveBackMoneyToUserUSD               = `update users set sowalga_usd = sowalga_usd + $1 where user_id = $2`
+	sqlReturningMoneyFromparentsTMT         = `update stores set jemi_hasap_tmt = jemi_hasap_tmt - $1  where store_id = $2`
+	sqlReturningMoneyFromparentsUSD         = `update stores set jemi_hasap_usd = jemi_hasap_usd - $1  where store_id = $2`
+	sqlGivingBackMoneyToparentsTMT          = `update stores set jemi_hasap_tmt = jemi_hasap_tmt + $1  where store_id = $2`
+	sqlGivingBackMoneyToparentsUSD          = `update stores set jemi_hasap_usd = jemi_hasap_usd + $1  where store_id = $2`
+	sqlUpdateTotalIncomeTMT                 = `update income_outcome set total_income_tmt = total_income_tmt - $1 where id = 1`
+	sqlUpdateTotalIncomeUSD                 = `update income_outcome set total_income_usd = total_income_usd - $1 where id = 1`
+	sqlUpdateTotalOutcomeTMT                = `update income_outcome set total_outcome_tmt = total_outcome_tmt - $1 where id = 1`
+	sqlUpdateTotalOutcomeUSD                = `update income_outcome set total_outcome_usd = total_outcome_usd - $1 where id = 1`
+	sqlInsertMessageToDeleteIncomeTransfer  = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' dukanyna bolan ' || $4 || $5 || ' pul girisini yzyna gaytardy ')`
+	sqlInsertMessageToDeleteOutcomeTransfer = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' dukanyndan cykan ' || $4 || $5 || ' pul cykysyny yzyna aldy ')`
+	sqlDeleteTransfer                       = `delete from money_transfers where id = $1`
 )
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -59,8 +67,8 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	DeleterId := function.SelectUserID(deleter)
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -95,8 +103,8 @@ func DeleteCustomer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	DeleterId := function.SelectUserID(deleter)
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -133,8 +141,8 @@ func DeleteWorker(w http.ResponseWriter, r *http.Request) {
 	}
 
 	DeleterId := function.SelectUserID(deleter)
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -170,8 +178,8 @@ func DeleteCategorie(w http.ResponseWriter, r *http.Request) {
 	}
 
 	DeleterId := function.SelectUserID(deleter)
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -211,8 +219,8 @@ func DeleteStore(w http.ResponseWriter, r *http.Request) {
 
 	DeleterId := function.SelectUserID(deleter)
 	Storename := function.SelectStore(IntId)
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -263,8 +271,8 @@ func DeletionOfIncomeTransfer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	DeleterId := function.SelectUserID(deleter)
-	conf := config.ReadJsonFile()
-	conn, err := pgx.Connect(context.Background(), os.Getenv(conf.DbConnect))
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(10)
@@ -283,7 +291,8 @@ func DeletionOfIncomeTransfer(w http.ResponseWriter, r *http.Request) {
 		var Currency string
 		var Customer string
 		var Storeid int
-		err = conn.QueryRow(context.Background(), sqlSelectTheTransaction, IntId).Scan(&Amount, &Currency, &Storeid, &Customer)
+		var Userid int
+		err = conn.QueryRow(context.Background(), sqlSelectTheTransaction, IntId).Scan(&Amount, &Currency, &Storeid, &Customer, &Userid)
 		if err != nil {
 			fmt.Println("error tmt")
 			fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
@@ -322,7 +331,7 @@ func DeletionOfIncomeTransfer(w http.ResponseWriter, r *http.Request) {
 				fmt.Println(rows2, err2)
 				ok = true
 			}
-			rows3, err3 := conn.Exec(context.Background(), sqlDeleteIncomeTransfer, IntId)
+			rows3, err3 := conn.Exec(context.Background(), sqlDeleteTransfer, IntId)
 			if rows3 == nil {
 
 				fmt.Println("PozulmADY")
@@ -365,7 +374,7 @@ func DeletionOfIncomeTransfer(w http.ResponseWriter, r *http.Request) {
 				fmt.Println(rows2, err2)
 				ok = true
 			}
-			rows3, err3 := conn.Exec(context.Background(), sqlDeleteIncomeTransfer, IntId)
+			rows3, err3 := conn.Exec(context.Background(), sqlDeleteTransfer, IntId)
 			if rows3 == nil {
 
 				fmt.Println("PozulmADY")
@@ -373,7 +382,7 @@ func DeletionOfIncomeTransfer(w http.ResponseWriter, r *http.Request) {
 				ok = true
 			}
 			if ok == false {
-				rows, err := conn.Exec(context.Background(), sqlInsertMessageToDeleteIncomeTransfer, DeleterId, "Pul girisini gaytarmak", Storename, StringFormOfAmount, Currency)
+				rows, err := conn.Exec(context.Background(), sqlInsertMessageToDeleteIncomeTransfer, DeleterId, "Pul girirsini gaytarmak", Storename, StringFormOfAmount, Currency)
 				if rows == nil {
 					fmt.Println("Gosulmady")
 					fmt.Println(rows, err)
@@ -391,5 +400,138 @@ func DeletionOfIncomeTransfer(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeletionOfOutcomeTransfer(w http.ResponseWriter, r *http.Request) {
+	Id := r.FormValue("id")
+	IntId, _ := strconv.Atoi(Id)
 
+	token := function.ExtractToken(r)
+	deleter, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
+	}
+
+	DeleterId := function.SelectUserID(deleter)
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(10)
+	}
+	defer conn.Close(context.Background())
+
+	var date time.Time
+	err = conn.QueryRow(context.Background(), sqlTakeTheTimeOfTransaction, IntId).Scan(&date)
+	if err != nil {
+		fmt.Println("error tmt")
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(12)
+	}
+	if function.IsItAvaiableForDeletingTransfer(date) == true {
+		var Amount int
+		var Currency string
+		var Customer string
+		var Storeid int
+		var Userid int
+		err = conn.QueryRow(context.Background(), sqlSelectTheTransaction, IntId).Scan(&Amount, &Currency, &Storeid, &Customer, &Userid)
+		if err != nil {
+			fmt.Println("error tmt")
+			fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+			os.Exit(12)
+		}
+		Storename := function.SelectStore(Storeid)
+		StringFormOfAmount := strconv.Itoa(Amount)
+		b := money.ParentStore(Storeid)
+		ok := false
+
+		if Currency == "TMT" {
+			rows, err := conn.Exec(context.Background(), sqlGiveBackTheMoneyTMT, Amount, Amount, Storeid)
+			if rows == nil {
+				fmt.Println(rows, err)
+				ok = true
+			}
+			rows1, err1 := conn.Exec(context.Background(), sqlGiveBackMoneyToUserTMT, Amount, Userid)
+			if rows1 == nil {
+				fmt.Println(rows1, err1)
+				ok = true
+			}
+
+			for j := 1; j < len(b)-1; j++ {
+				if ok == false {
+					rows, err := conn.Exec(context.Background(), sqlGivingBackMoneyToparentsTMT, Amount, b[j])
+					if err != nil {
+						fmt.Println("error tmt")
+						fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+						fmt.Println(rows)
+						ok = true
+					}
+				}
+			}
+			rows2, err2 := conn.Exec(context.Background(), sqlUpdateTotalOutcomeTMT, Amount)
+			if rows2 == nil {
+				fmt.Println(rows2, err2)
+				ok = true
+			}
+			rows3, err3 := conn.Exec(context.Background(), sqlDeleteTransfer, IntId)
+			if rows3 == nil {
+				fmt.Println("PozulmADY")
+				fmt.Println(rows3, err3)
+				ok = true
+			}
+			if ok == false {
+				rows, err := conn.Exec(context.Background(), sqlInsertMessageToDeleteOutcomeTransfer, DeleterId, "Pul cykysyny yzyna almak", Storename, StringFormOfAmount, Currency)
+				if rows == nil {
+					fmt.Println(rows, err)
+
+				}
+			}
+		}
+		if Currency == "USD" {
+			rows, err := conn.Exec(context.Background(), sqlGiveBackTheMoneyUSD, Amount, Amount, Storeid)
+			if rows == nil {
+				fmt.Println(rows, err)
+				ok = true
+			}
+			rows1, err1 := conn.Exec(context.Background(), sqlGiveBackMoneyToUserUSD, Amount, Userid)
+			if rows1 == nil {
+				fmt.Println(rows1, err1)
+				ok = true
+			}
+
+			for j := 1; j < len(b)-1; j++ {
+				if ok == false {
+					rows, err := conn.Exec(context.Background(), sqlGivingBackMoneyToparentsUSD, Amount, b[j])
+					if err != nil {
+						fmt.Println("error tmt")
+						fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+						fmt.Println(rows)
+						ok = true
+					}
+				}
+			}
+			rows2, err2 := conn.Exec(context.Background(), sqlUpdateTotalOutcomeUSD, Amount)
+			if rows2 == nil {
+				fmt.Println(rows2, err2)
+				ok = true
+			}
+			rows3, err3 := conn.Exec(context.Background(), sqlDeleteTransfer, IntId)
+			if rows3 == nil {
+				fmt.Println("PozulmADY")
+				fmt.Println(rows3, err3)
+				ok = true
+			}
+			if ok == false {
+				rows, err := conn.Exec(context.Background(), sqlInsertMessageToDeleteOutcomeTransfer, DeleterId, "Pul cykysyny yzyna almak", Storename, StringFormOfAmount, Currency)
+				if rows == nil {
+					fmt.Println(rows, err)
+
+				}
+			}
+		}
+		responses.SendResponse(w, err, nil, nil)
+	}
+	if function.IsItAvaiableForDeletingTransfer(date) == false {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+	}
 }

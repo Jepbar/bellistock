@@ -22,7 +22,7 @@ CREATE TABLE workers(
     home_phone          VARCHAR(100)             NOT NULL,
     email               VARCHAR(100)             NOT NULL,   
     file_name           VARCHAR(100),
-    note                VARCHAR(250),
+    note                VARCHAR(250)           DEFAULT '',
     is_it_deleted       VARCHAR(100)             DEFAULT 'False'
 );
 
@@ -50,7 +50,7 @@ CREATE TABLE customers(
     girdeyjisi_tmt      int         DEFAULT 0,
     girdeyjisi_usd      int         DEFAULT 0,
     is_it_deleted   VARCHAR(100)    DEFAULT 'False',
-    note            VARCHAR(100) 
+    note            VARCHAR(100)    DEFAULT ''
 );
 
 CREATE TABLE money_transfers(
@@ -71,7 +71,7 @@ CREATE TABLE money_transfers(
     galany                       INT                DEFAULT NULL,
     money_gone_to                VARCHAR(100)       DEFAULT '',
     user_id                      INT                NOT NULL,
-    note                         VARCHAR(255)       DEFAULT NULL,
+    note                         VARCHAR(255)       DEFAULT '',
     contract                     VARCHAR(255)       DEFAULT NULL,
     create_ts TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -85,7 +85,7 @@ CREATE TABLE transfers_between_stores(
     currency               VARCHAR(100)           NOT NULL,
     total_payment_amount   INT                    NOT NULL,
     date                   date                   NOT NULL,
-    note                   VARCHAR(255),
+    note                   VARCHAR(255)        DEFAULT '',
     create_ts TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 
 );
