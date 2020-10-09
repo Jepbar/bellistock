@@ -74,7 +74,8 @@ func main() {
 	r.HandleFunc("/api/givedataaboutuser", givedataforediting.GiveDataAboutUserForEditing)
 	r.HandleFunc("/api/givedataaboutworker", givedataforediting.GiveDataAboutWorkerForEditing)
 	r.HandleFunc("/api/givedataaboutcustomer", givedataforediting.GiveDataAboutCustomerForediting)
-	r.HandleFunc("/api/givedataaboutcategorie", givedataforediting.GiveDataAboutcategorieForEditing)
+	r.HandleFunc("/api/givedataaboutcategorie", givedataforediting.GiveDataAboutCategorieForEditing)
+	r.HandleFunc("/api/givedataaboutincometransfer", givedataforediting.GiveDataAboutIncomeTransferForEditing)
 
 	/*----UpdatingData----*/
 
@@ -83,6 +84,7 @@ func main() {
 	r.HandleFunc("/api/updateworker", update.UpdateWorkerData)
 	r.HandleFunc("/api/updatecustomer", update.UpdateCustomerData)
 	r.HandleFunc("/api/updatecategorie", update.UpdateCategorieData)
+	r.HandleFunc("/api/updateincometransfer", update.UpdateIncomeTransferData)
 
 	http.Handle("/", r)
 	http.ListenAndServe(config.Conf.ListenAndServe, nil)

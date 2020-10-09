@@ -15,19 +15,19 @@ import (
 )
 
 const (
-	sqlSelect                      = `select user_id, username, role, email, sowalga_tmt, sowalga_usd from users where is_it_deleted = 'False'`
+	sqlSelectUsers                 = `select user_id, username, role, email, sowalga_tmt, sowalga_usd from users where is_it_deleted = 'False' order by username limit $1 offset $2`
 	sqlSelectStore                 = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores where store_id = $1 and is_it_deleted = 'False'`
 	sqlSelectAllStore              = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores where is_it_deleted = 'False'`
 	sqlSelectChildStores           = `select store_id, name, jemi_hasap_tmt, jemi_hasap_usd, shahsy_hasap_tmt, shahsy_hasap_usd from stores where parent_store_id = $1 and is_it_deleted = 'False'`
 	sqlSelectLastActions           = `select l.id, u.username, l.action, l.message, l.create_ts, l.is_it_seen from last_modifications l inner join users u on l.user_id = u.user_id order by id desc limit $1 offset $2`
 	sqlUpdateActions               = `update last_modifications set is_it_seen = $1 where id = $2`
-	sqlSelectCustomer              = `select customer_id, name, girdeyjisi_tmt, girdeyjisi_usd from customers where is_it_deleted = 'False'`
-	sqlSelectTransferBetweenStores = `select id, user_id, from_store_name, to_store_name, total_payment_amount, currency, type_of_account, date from transfers_between_stores`
-	sqlSelectWorkers               = `select worker_id , fullname, wezipesi, salary, degisli_dukany from workers where is_it_deleted = 'False'`
-	sqlSelectMoneyTransfers        = `select m.id, s.name, m.type_of_transfer, m.user_id, m.type_of_account, m.total_payment_amount, m.currency, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id`
-	sqlSelectIncomes               = `select m.id, s.name, m.customer, m.project, m.type_of_account, m.total_payment_amount, m.currency, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id where m.type_of_transfer = 'girdi'`
-	sqlSelectOutcomes              = `select m.id, s.name, m.money_gone_to, m.total_payment_amount, m.currency, m.type_of_account, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id where m.type_of_transfer = 'cykdy'`
-	sqlSelectCategories            = `select categorie_id, name, parent_categorie from categories where is_it_deleted = 'False'`
+	sqlSelectCustomer              = `select customer_id, name, girdeyjisi_tmt, girdeyjisi_usd from customers where is_it_deleted = 'False' order by name limit $1 offset $2`
+	sqlSelectTransferBetweenStores = `select id, user_id, from_store_name, to_store_name, total_payment_amount, currency, type_of_account, date from transfers_between_stores order by create_ts desc limit $1 offset $2`
+	sqlSelectWorkers               = `select worker_id , fullname, wezipesi, salary, degisli_dukany from workers where is_it_deleted = 'False' order by fullname limit $1 offset $2`
+	sqlSelectMoneyTransfers        = `select m.id, s.name, m.type_of_transfer, m.user_id, m.type_of_account, m.total_payment_amount, m.currency, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id order by m.create_ts desc limit 41 offset $2`
+	sqlSelectIncomes               = `select m.id, s.name, m.customer, m.project, m.type_of_account, m.total_payment_amount, m.currency, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id where m.type_of_transfer = 'girdi' order by create_ts desc limit $1 offset $2`
+	sqlSelectOutcomes              = `select m.id, s.name, m.money_gone_to, m.total_payment_amount, m.currency, m.type_of_account, m.date, m.categorie from money_transfers m inner join stores s on s.store_id = m.store_id where m.type_of_transfer = 'cykdy' order by create_ts desc limit $1 offset $2`
+	sqlSelectCategories            = `select categorie_id, name, parent_categorie from categories where is_it_deleted = 'False' order by name limit $1 offset $2`
 	sqlSelectTotalIncome           = `select total_income_tmt , total_income_usd from income_outcome where id = 1`
 	sqlSelectTotalOutcome          = `select total_outcome_tmt , total_outcome_usd from income_outcome where id = 1`
 )
@@ -41,6 +41,10 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
+	limit := r.FormValue("limit")
+	offset := r.FormValue("offset")
+	intLimit, _ := strconv.Atoi(limit)
+	intOffset, _ := strconv.Atoi(offset)
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
@@ -49,7 +53,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	rows, err := conn.Query(context.Background(), sqlSelect)
+	rows, err := conn.Query(context.Background(), sqlSelectUsers, intLimit, intOffset)
 
 	defer rows.Close()
 
@@ -260,6 +264,10 @@ func GetCustomers(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
+	limit := r.FormValue("limit")
+	offset := r.FormValue("offset")
+	intLimit, _ := strconv.Atoi(limit)
+	intOffset, _ := strconv.Atoi(offset)
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
@@ -268,7 +276,7 @@ func GetCustomers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	rows, err := conn.Query(context.Background(), sqlSelectCustomer)
+	rows, err := conn.Query(context.Background(), sqlSelectCustomer, intLimit, intOffset)
 
 	defer rows.Close()
 
@@ -300,6 +308,12 @@ func GetCategories(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	limit := r.FormValue("limit")
+	offset := r.FormValue("offset")
+
+	intLimit, _ := strconv.Atoi(limit)
+	intOffset, _ := strconv.Atoi(offset)
+
 	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
@@ -307,7 +321,7 @@ func GetCategories(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	rows, err := conn.Query(context.Background(), sqlSelectCategories)
+	rows, err := conn.Query(context.Background(), sqlSelectCategories, intLimit, intOffset)
 
 	defer rows.Close()
 	List := make([]*responses.Categories, 0)
@@ -335,6 +349,10 @@ func GetTransferBetweenStores(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
+	limit := r.FormValue("limit")
+	offset := r.FormValue("offset")
+	intLimit, _ := strconv.Atoi(limit)
+	intOffset, _ := strconv.Atoi(offset)
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
@@ -343,7 +361,7 @@ func GetTransferBetweenStores(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	rows, err := conn.Query(context.Background(), sqlSelectTransferBetweenStores)
+	rows, err := conn.Query(context.Background(), sqlSelectTransferBetweenStores, intLimit, intOffset)
 
 	defer rows.Close()
 
@@ -378,6 +396,10 @@ func GetWorkers(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
+	limit := r.FormValue("limit")
+	offset := r.FormValue("offset")
+	intLimit, _ := strconv.Atoi(limit)
+	intOffset, _ := strconv.Atoi(offset)
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
@@ -386,7 +408,7 @@ func GetWorkers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	rows, err := conn.Query(context.Background(), sqlSelectWorkers)
+	rows, err := conn.Query(context.Background(), sqlSelectWorkers, intLimit, intOffset)
 
 	defer rows.Close()
 
@@ -416,6 +438,11 @@ func GetMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
+	limit := r.FormValue("limit")
+	offset := r.FormValue("offset")
+
+	intLimit, _ := strconv.Atoi(limit)
+	intOffset, _ := strconv.Atoi(offset)
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
@@ -424,7 +451,7 @@ func GetMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	rows, err := conn.Query(context.Background(), sqlSelectMoneyTransfers)
+	rows, err := conn.Query(context.Background(), sqlSelectMoneyTransfers, intLimit, intOffset)
 	defer rows.Close()
 
 	List := make([]*responses.MoneyTransfer, 0)
@@ -461,6 +488,10 @@ func GetIncomes(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
+	limit := r.FormValue("limit")
+	offset := r.FormValue("offset")
+	intLimit, _ := strconv.Atoi(limit)
+	intOffset, _ := strconv.Atoi(offset)
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
@@ -476,7 +507,7 @@ func GetIncomes(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("erroro")
 	}
 
-	rows, err := conn.Query(context.Background(), sqlSelectIncomes)
+	rows, err := conn.Query(context.Background(), sqlSelectIncomes, intLimit, intOffset)
 	defer rows.Close()
 
 	List := make([]*responses.Incomes, 0)
@@ -519,6 +550,10 @@ func GetOutcomes(w http.ResponseWriter, r *http.Request) {
 		responses.SendResponse(w, err, nil, nil)
 		return
 	}
+	limit := r.FormValue("limit")
+	offset := r.FormValue("offset")
+	intLimit, _ := strconv.Atoi(limit)
+	intOffset, _ := strconv.Atoi(offset)
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
@@ -534,7 +569,7 @@ func GetOutcomes(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("erroro")
 	}
 
-	rows, err := conn.Query(context.Background(), sqlSelectOutcomes)
+	rows, err := conn.Query(context.Background(), sqlSelectOutcomes, intLimit, intOffset)
 	defer rows.Close()
 
 	List := make([]*responses.Outcomes, 0)

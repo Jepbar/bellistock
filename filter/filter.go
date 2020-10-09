@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 
 	"stock/config"
 	"stock/function"
@@ -18,6 +19,10 @@ func FilterWorkers(w http.ResponseWriter, r *http.Request) {
 	Name := r.FormValue("name")
 	Wezipesi := r.FormValue("wezipesi")
 	DependingStore := r.FormValue("depending_store")
+	limit := r.FormValue("limit")
+	offset := r.FormValue("offset")
+	intLimit, _ := strconv.Atoi(limit)
+	intOffset, _ := strconv.Atoi(offset)
 
 	var filter responses.Filterworkers
 	filter.Name = Name
@@ -41,7 +46,7 @@ func FilterWorkers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	rows, err := conn.Query(context.Background(), sqlFilterWorkers)
+	rows, err := conn.Query(context.Background(), sqlFilterWorkers, intLimit, intOffset)
 	defer rows.Close()
 
 	List := make([]*responses.Workers, 0)
@@ -69,6 +74,10 @@ func FilterMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 	Categorie := r.FormValue("categorie")
 	Begin := r.FormValue("begin")
 	End := r.FormValue("end")
+	limit := r.FormValue("limit")
+	offset := r.FormValue("offset")
+	intLimit, _ := strconv.Atoi(limit)
+	intOffset, _ := strconv.Atoi(offset)
 
 	var filter responses.FilterMoneyTransfers
 	filter.Store = Store
@@ -95,7 +104,7 @@ func FilterMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	rows, err := conn.Query(context.Background(), sqlFilterMoneyTransfers)
+	rows, err := conn.Query(context.Background(), sqlFilterMoneyTransfers, intLimit, intOffset)
 	defer rows.Close()
 
 	List := make([]*responses.MoneyTransfer, 0)
@@ -133,6 +142,10 @@ func FilterIncomes(w http.ResponseWriter, r *http.Request) {
 	TypeOfIncomePayment := r.FormValue("type_of_income_payment")
 	Begin := r.FormValue("begin")
 	End := r.FormValue("end")
+	limit := r.FormValue("limit")
+	offset := r.FormValue("offset")
+	intLimit, _ := strconv.Atoi(limit)
+	intOffset, _ := strconv.Atoi(offset)
 
 	var filter responses.FilterIncomes
 	filter.Store = Store
@@ -161,7 +174,7 @@ func FilterIncomes(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	rows, err := conn.Query(context.Background(), sqlFilterIncome)
+	rows, err := conn.Query(context.Background(), sqlFilterIncome, intLimit, intOffset)
 	defer rows.Close()
 
 	List := make([]*responses.Incomes, 0)
@@ -195,6 +208,10 @@ func FilterOutcomes(w http.ResponseWriter, r *http.Request) {
 	MoneyGoneTo := r.FormValue("money_gone_to")
 	Begin := r.FormValue("begin")
 	End := r.FormValue("end")
+	limit := r.FormValue("limit")
+	offset := r.FormValue("offset")
+	intLimit, _ := strconv.Atoi(limit)
+	intOffset, _ := strconv.Atoi(offset)
 
 	var filter responses.FilterOutcomes
 	filter.Store = Store
@@ -222,7 +239,7 @@ func FilterOutcomes(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	rows, err := conn.Query(context.Background(), sqlFilterOutcome)
+	rows, err := conn.Query(context.Background(), sqlFilterOutcome, intLimit, intOffset)
 	defer rows.Close()
 
 	List := make([]*responses.Outcomes, 0)
@@ -255,6 +272,10 @@ func FilterBetweenStores(w http.ResponseWriter, r *http.Request) {
 	TypeOfAccount := r.FormValue("type_of_account")
 	Begin := r.FormValue("begin")
 	End := r.FormValue("end")
+	limit := r.FormValue("limit")
+	offset := r.FormValue("offset")
+	intLimit, _ := strconv.Atoi(limit)
+	intOffset, _ := strconv.Atoi(offset)
 
 	var filter responses.FilterBetweenStores
 
@@ -281,7 +302,7 @@ func FilterBetweenStores(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
-	rows, err := conn.Query(context.Background(), sqlFilterBetweenStores)
+	rows, err := conn.Query(context.Background(), sqlFilterBetweenStores, intLimit, intOffset)
 
 	defer rows.Close()
 

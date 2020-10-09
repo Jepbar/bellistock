@@ -86,27 +86,27 @@ type LastActions struct {
 }
 
 type UserLogin struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
+	AccessToken string `json:"access_token"`
+	Role        string `json:"role"`
 }
 
 type Workers struct {
 	Workerid      int    `json:"worker_id"`
 	Fullname      string `json:"fullname"`
 	Salary        int    `json:"salary"`
-	Wezipesi      string `json:"wezipes"`
+	Wezipesi      string `json:"wezipesi"`
 	DegisliDukany string `json:"degisli_dukany"`
 }
 
 type WorkerDataForEditing struct {
 	Fullname      string `json:"fullname"`
 	Salary        int    `json:"salary"`
-	Wezipesi      string `json:"wezipes"`
+	Wezipesi      string `json:"wezipesi"`
 	DegisliDukany string `json:"degisli_dukany"`
 	HomePhone     string `json:"home_phone"`
 	Phone         string `json:"phone"`
 	Email         string `json:"email"`
-	HomeAddres    string `json:"home_addres`
+	HomeAddres    string `json:"home_addres"`
 	Note          string `json:"note"`
 }
 
@@ -143,6 +143,19 @@ type Incomes struct {
 	Date               string `json:"date"`
 	Customer           string `json:"customer"`
 	Project            string `json:"project"`
+}
+
+type IncomeDataForEditing struct {
+	Store               string `json:"store"`
+	TypeOfAccount       string `json:"type_of_account"`
+	TotalPaymentAmount  int    `json:"total_payment_amount"`
+	Currency            string `json:"currency"`
+	Categorie           string `json:"categorie"`
+	Date                string `json:"date"`
+	Customer            string `json:"customer"`
+	Project             string `json:"project"`
+	Keyword             string `json:"keyword"`
+	TypeOfIncomePayment string `json:"type_of_income_payment"`
 }
 
 type TotalIncome struct {

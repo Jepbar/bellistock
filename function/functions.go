@@ -133,7 +133,7 @@ func VerifyAccessToken(token string) (string, error) {
 	return username, err
 }
 
-func CreateToken(username string) (string, string, error) {
+func CreateToken(username string) (string, error) {
 	var err error
 
 	//Creating Access Token
@@ -145,18 +145,18 @@ func CreateToken(username string) (string, string, error) {
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	token, err := at.SignedString([]byte(os.Getenv("ACCESS_SECRET")))
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
-
-	refreshToken := jwt.New(jwt.SigningMethodHS256)
-	rtClaims := refreshToken.Claims.(jwt.MapClaims)
-	rtClaims["sub"] = 1
-	rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
-	rt, err := refreshToken.SignedString([]byte("secret"))
-	if err != nil {
-		return "", "", err
-	}
-	return token, rt, nil
+	/*
+		refreshToken := jwt.New(jwt.SigningMethodHS256)
+		rtClaims := refreshToken.Claims.(jwt.MapClaims)
+		rtClaims["sub"] = 1
+		rtClaims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+		rt, err := refreshToken.SignedString([]byte("secret"))
+		if err != nil {
+			return "", "", err
+		}*/
+	return token, nil
 }
 
 func ExtractToken(r *http.Request) string {
@@ -336,6 +336,7 @@ func GenerateSqlFilterWorkers(filter responses.Filterworkers) (sql string, err e
 			sql += ` and degisli_dukany ` + `ILIKE` + `'%` + filter.DependingStore + `%'`
 		}
 	}
+	sql += ` order by fullname limit $1 offset $2`
 
 	return
 
@@ -390,6 +391,9 @@ func GenerateSqlFilterMoneyTransfers(filter responses.FilterMoneyTransfers) (sql
 			sql += ` and m.date ` + ` <=` + `'` + filter.End + `'`
 		}
 	}
+
+	sql += ` order by m.create_ts limit $1 offset $2`
+
 	return
 
 }
@@ -427,6 +431,9 @@ func GenerateSqlFilterIncomes(filter responses.FilterIncomes) (sql string, err e
 	if len(filter.End) > 0 {
 		sql += ` and m.date ` + ` <=` + `'` + filter.End + `'`
 	}
+
+	sql += ` order by m.create_ts limit $1 offset $2`
+
 	return
 
 }
@@ -461,6 +468,9 @@ func GenerateSqlFilterOutcomes(filter responses.FilterOutcomes) (sql string, err
 	if len(filter.End) > 0 {
 		sql += ` and m.date ` + ` <=` + `'` + filter.End + `'`
 	}
+
+	sql += ` order by m.create_ts limit $1 offset $2`
+
 	return
 
 }
@@ -505,6 +515,9 @@ func GenerateSqlFilterTransferBetweenStores(filter responses.FilterBetweenStores
 			sql += ` and date ` + ` <=` + `'` + filter.End + `'`
 		}
 	}
+
+	sql += ` order by create_ts limit $1 offset $2`
+
 	return
 
 }

@@ -50,7 +50,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		}
 		defer conn.Close(context.Background())
 
-		userid := 0
+		var userid int
 		err = conn.QueryRow(context.Background(), sqlInsertUser, username, email, x, role).Scan(&userid)
 
 		if err != nil {

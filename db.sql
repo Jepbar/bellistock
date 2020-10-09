@@ -61,7 +61,7 @@ CREATE TABLE money_transfers(
     currency                     VARCHAR(100)       NOT NULL,        
     categorie                    VARCHAR(100)       NOT NULL,
     date                         date,          
-    keyword                      VARCHAR(255)       DEFAULT NULL,
+    keyword                      VARCHAR(255)       DEFAULT '',
     customer                     VARCHAR(100)       DEFAULT NULL,
     project                      VARCHAR(100)       DEFAULT NULL,
     type_of_income_payment       VARCHAR(100)       DEFAULT NULL,      /*doly, doly dal*/
@@ -73,7 +73,8 @@ CREATE TABLE money_transfers(
     user_id                      INT                NOT NULL,
     note                         VARCHAR(255)       DEFAULT '',
     contract                     VARCHAR(255)       DEFAULT NULL,
-    create_ts TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    create_ts TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    update_ts TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE transfers_between_stores(

@@ -42,14 +42,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, rt, err := function.CreateToken(username)
+	token, err := function.CreateToken(username)
 	if err != nil {
 		panic(err)
 	}
+	RoleOfUser := function.SelectRoleOfUser(function.SelectUserID(username))
 
 	item := &responses.UserLogin{
-		AccessToken:  token,
-		RefreshToken: rt,
+		AccessToken: token,
+		Role:        RoleOfUser,
 	}
 
 	responses.SendResponse(w, err, item, nil)
