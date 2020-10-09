@@ -111,6 +111,10 @@ CREATE TABLE income_outcome(
 
 )
 
+------Insertions--------
+
+INSERT INTO stores(name, parent_store_id) values("Total store", -1)
+
 
 
 
