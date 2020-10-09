@@ -14,16 +14,17 @@ import (
 )
 
 const (
-	sqlInsertUser      = `insert into users(username, email, password, role) values($1, $2, $3, $4) returning user_id`
-	sqlInsertStore     = `insert into stores(name, parent_store_id) values($1, $2) returning store_id`
-	sqlInsertMessage1  = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' dukanyny doretdi') returning id`
-	sqlInsertCustomer  = `insert into customers(name, note) values($1, $2) returning customer_id `
-	sqlInsertMessage2  = `insert into last_modifications(user_id, action, message) values($1, $2, $3  || ' atly musderini sanawa gosdy') returning id`
-	sqlInsertMessage3  = `insert into last_modifications(user_id, action,message) values($1, $2, $3 || ' atly useri sanawa gosdy') returning id`
-	sqlInsertCategorie = `insert into categories(name) values($1) returning name`
-	sqlInsertMessage4  = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' kategoriyasyny doretdi') returning id`
-	sqlInsertWorker    = `insert into workers(fullname, degisli_dukany, wezipesi, salary, phone, home_addres, home_phone, email, file_name, note) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
-	sqlInsertMessage5  = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly ishgari sanawa gosdy ')`
+	sqlInsertUser            = `insert into users(username, email, password, role) values($1, $2, $3, $4) returning user_id`
+	sqlInsertStore           = `insert into stores(name, parent_store_id) values($1, $2) returning store_id`
+	sqlInsertMessage1        = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' dukanyny doretdi') returning id`
+	sqlInsertCustomer        = `insert into customers(name, note) values($1, $2) returning customer_id `
+	sqlInsertMessage2        = `insert into last_modifications(user_id, action, message) values($1, $2, $3  || ' atly musderini sanawa gosdy') returning id`
+	sqlInsertMessage3        = `insert into last_modifications(user_id, action,message) values($1, $2, $3 || ' atly useri sanawa gosdy') returning id`
+	sqlInsertCategorie       = `insert into categories(name) values($1) returning name`
+	sqlInsertMessage4        = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' kategoriyasyny doretdi') returning id`
+	sqlInsertWorker          = `insert into workers(fullname, degisli_dukany, wezipesi, salary, phone, home_addres, home_phone, email, file_name, note) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
+	sqlInsertMessage5        = `insert into last_modifications(user_id, action, message) values($1, $2, $3 || ' atly ishgari sanawa gosdy ')`
+	sqlCountTheNumberOfUserd = `select count(*) from users where username = $1`
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -50,22 +51,33 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		}
 		defer conn.Close(context.Background())
 
-		var userid int
-		err = conn.QueryRow(context.Background(), sqlInsertUser, username, email, x, role).Scan(&userid)
-
-		if err != nil {
+		var NumberOfUsers int
+		err1 := conn.QueryRow(context.Background(), sqlCountTheNumberOfUserd, username).Scan(&NumberOfUsers)
+		if err1 != nil {
 			fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
 			os.Exit(1)
 		}
 
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		if NumberOfUsers == 0 {
+			var userid int
+			err2 := conn.QueryRow(context.Background(), sqlInsertUser, username, email, x, role).Scan(&userid)
+			if err2 != nil {
+				fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+				os.Exit(1)
+			}
 
-		ID := function.SelectUserID(adder)
-		var m int
-		err = conn.QueryRow(context.Background(), sqlInsertMessage3, ID, "User gosmak", username).Scan(&m)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-			os.Exit(100)
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+
+			ID := function.SelectUserID(adder)
+			var m int
+			err = conn.QueryRow(context.Background(), sqlInsertMessage3, ID, "User gosmak", username).Scan(&m)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+				os.Exit(100)
+			}
+		} else {
+			err = responses.ErrUnauthorized
+			responses.SendResponse(w, err, nil, nil)
 		}
 	} else {
 		w.WriteHeader(400)
