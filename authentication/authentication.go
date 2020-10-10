@@ -32,8 +32,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var hashedpass string
 	err = conn.QueryRow(context.Background(), sqlselect, username).Scan(&hashedpass)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
-		os.Exit(2)
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
+
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(hashedpass), []byte(password))
