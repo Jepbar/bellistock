@@ -32,7 +32,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var hashedpass string
 	err = conn.QueryRow(context.Background(), sqlselect, username).Scan(&hashedpass)
 	if err != nil {
-		err = responses.ErrForbidden
+		err = responses.ErrUnauthorized
 		responses.SendResponse(w, err, nil, nil)
 		return
 
@@ -40,7 +40,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(hashedpass), []byte(password))
 	if err != nil {
-		fmt.Println("error password")
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
 		return
 	}
 
