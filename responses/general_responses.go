@@ -149,6 +149,7 @@ type IncomeDataForEditing struct {
 	Store               string `json:"store"`
 	TypeOfAccount       string `json:"type_of_account"`
 	TotalPaymentAmount  int    `json:"total_payment_amount"`
+	TypeOfTransfer      string `json:"type_of_transfer"`
 	Currency            string `json:"currency"`
 	Categorie           string `json:"categorie"`
 	Date                string `json:"date"`
@@ -156,6 +157,7 @@ type IncomeDataForEditing struct {
 	Project             string `json:"project"`
 	Keyword             string `json:"keyword"`
 	TypeOfIncomePayment string `json:"type_of_income_payment"`
+	Note                string `json:"note"`
 }
 
 type TotalIncome struct {
@@ -179,6 +181,19 @@ type Outcomes struct {
 	Currency           string `json:"currency"`
 	Categorie          string `json:"categorie"`
 	Date               string `json:"date"`
+}
+
+type OutcomeDataForEditing struct {
+	Store              string `json:"store"`
+	MoneyGoneTo        string `json:"money_gone_to"`
+	TypeOfAccount      string `json:"type_of_account"`
+	TypeOfTransfer     string `json:"type_of_transfer"`
+	TotalPaymentAmount int    `json:"total_payment_amount"`
+	Currency           string `json:"currency"`
+	Categorie          string `json:"categorie"`
+	Date               string `json:"date"`
+	Keyword            string `json:"keyword"`
+	Note               string `json:"note"`
 }
 
 type Filterworkers struct {
@@ -300,9 +315,11 @@ func SendResponse(w http.ResponseWriter, err error, data interface{}, clog *log.
 		resp.Success = true
 		resp.StatusCode = statusCode
 		resp.Data = data
+
 	} else {
 		resp.Success = false
 		resp.StatusCode = statusCode
+
 	}
 
 	err = json.NewEncoder(w).Encode(resp)

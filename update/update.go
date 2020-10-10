@@ -84,6 +84,20 @@ func UpdatePasswordOfUser(w http.ResponseWriter, r *http.Request) {
 
 	Intid, _ := strconv.Atoi(Id)
 	Editorid := function.SelectUserID(editor)
+	var x int
+	var y string
+	if function.SelectRoleOfUser(Editorid) == "Admin" {
+		if len(Id) > 0 {
+			x = Intid
+			y = Id
+		} else {
+			x = Editorid
+			y = strconv.Itoa(Editorid)
+		}
+	} else {
+		x = Editorid
+		y = strconv.Itoa(Editorid)
+	}
 
 	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
 	if err != nil {
@@ -93,7 +107,7 @@ func UpdatePasswordOfUser(w http.ResponseWriter, r *http.Request) {
 	defer conn.Close(context.Background())
 
 	var hashedpass string
-	err = conn.QueryRow(context.Background(), sqlSelectPasswordOfUser, Intid).Scan(&hashedpass)
+	err = conn.QueryRow(context.Background(), sqlSelectPasswordOfUser, x).Scan(&hashedpass)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
 		os.Exit(2)
@@ -106,11 +120,11 @@ func UpdatePasswordOfUser(w http.ResponseWriter, r *http.Request) {
 	}
 	NewHashedPassword := function.Hash(NewPassword)
 	if ok == false && len(NewPassword) > 7 && function.Ascii(NewPassword) == true {
-		rows, err := conn.Exec(context.Background(), sqlUpdatePasswordOfUser, NewHashedPassword, Intid)
+		rows, err := conn.Exec(context.Background(), sqlUpdatePasswordOfUser, NewHashedPassword, x)
 		if rows == nil {
 			fmt.Println(rows, err)
 		}
-		rows1, err1 := conn.Exec(context.Background(), sqlInsertMessageUpdatingUsersPassword, Editorid, "Password tazelemek", Id)
+		rows1, err1 := conn.Exec(context.Background(), sqlInsertMessageUpdatingUsersPassword, Editorid, "Password tazelemek", y)
 		if rows == nil {
 			fmt.Println(rows1, err1)
 		}
@@ -482,3 +496,111 @@ func UpdateIncomeTransferData(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+/*
+func UpdateOutcomeTransferData(w http.ResponseWriter, r *http.Request) {
+	token := function.ExtractToken(r)
+	editor, err := function.VerifyAccessToken(token)
+	if err != nil {
+		err = responses.ErrForbidden
+		responses.SendResponse(w, err, nil, nil)
+		return
+	}
+	Id := r.FormValue("id")
+	storeid := r.FormValue("store_id")
+	typeOfAccount := r.FormValue("type_of_account")
+	currency := r.FormValue("currency")
+	categorie := r.FormValue("categorie")
+	customer := r.FormValue("customer")
+	project := r.FormValue("project")
+	typeOfIncomePayment := r.FormValue("type_of_income_payment")
+	totalPaymentAmount := r.FormValue("total_payment_amount")
+	keyword := r.FormValue("keyword")
+	Date := r.FormValue("date")
+
+	CurrentTime := time.Now()
+	IntId, _ := strconv.Atoi(Id)
+	intTotalPaymentAmount, _ := strconv.Atoi(totalPaymentAmount)
+	intStoreid, _ := strconv.Atoi(storeid)
+
+	time1 := function.ChangeStringToDate(Date)
+
+	Editorid := function.SelectUserID(editor)
+
+	conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(10)
+	}
+	defer conn.Close(context.Background())
+
+	var Amount int
+	var Currency string
+	var Customer string
+	var Storeid int
+	var Userid int
+	err = conn.QueryRow(context.Background(), deletion.SqlSelectTheTransaction, IntId).Scan(&Amount, &Currency, &Storeid, &Customer, &Userid)
+	if err != nil {
+		fmt.Println("error tmt")
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(12)
+	}
+	Storename := function.SelectStore(Storeid)
+	StringFormOfAmount := strconv.Itoa(Amount)
+	b := money.ParentStore(Storeid)
+
+	var date time.Time
+	err = conn.QueryRow(context.Background(), deletion.SqlTakeTheTimeOfTransaction, IntId).Scan(&date)
+	if err != nil {
+		fmt.Println("error tmt")
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		os.Exit(12)
+	}
+
+	RoleOfEditor := function.SelectRoleOfUser(Editorid)
+	if function.IsItAvaiableForDeletingTransfer(date) == true && Editorid == Userid || RoleOfEditor == "Admin" {
+		if Currency == "TMT" {
+			rows, err := conn.Exec(context.Background(), SqlGiveBackTheMoneyTMT, Amount, Amount, Storeid)
+			if rows == nil {
+				fmt.Println(rows, err)
+				ok = true
+			}
+			rows1, err1 := conn.Exec(context.Background(), SqlGiveBackMoneyToUserTMT, Amount, Userid)
+			if rows1 == nil {
+				fmt.Println(rows1, err1)
+				ok = true
+			}
+
+			for j := 1; j < len(b)-1; j++ {
+				if ok == false {
+					rows, err := conn.Exec(context.Background(), SqlGivingBackMoneyToparentsTMT, Amount, b[j])
+					if err != nil {
+						fmt.Println("error tmt")
+						fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+						fmt.Println(rows)
+						ok = true
+					}
+				}
+			}
+			rows2, err2 := conn.Exec(context.Background(), SqlUpdateTotalOutcomeTMT, Amount)
+			if rows2 == nil {
+				fmt.Println(rows2, err2)
+				ok = true
+			}
+			rows3, err3 := conn.Exec(context.Background(), SqlDeleteTransfer, IntId)
+			if rows3 == nil {
+				fmt.Println("PozulmADY")
+				fmt.Println(rows3, err3)
+				ok = true
+			}
+			if ok == false {
+				rows, err := conn.Exec(context.Background(), SqlInsertMessageToDeleteOutcomeTransfer, DeleterId, "Pul cykysyny yzyna almak", Storename, StringFormOfAmount, Currency)
+				if rows == nil {
+					fmt.Println(rows, err)
+
+				}
+			}
+		}
+	}
+}
+*/

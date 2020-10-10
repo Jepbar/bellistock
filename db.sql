@@ -2,8 +2,8 @@
 
 CREATE TABLE users(
     user_id     SERIAL,
-    username    VARCHAR(100)    NOT NULL UNIQUE,
-    password    VARCHAR(100)    NOT NULL UNIQUE,
+    username    VARCHAR(100)    NOT NULL,
+    password    VARCHAR(100)    NOT NULL,
     email       VARCHAR(100)    NOT NULL,
     role        VARCHAR(100)    NOT NULL,
     sowalga_tmt   INT           DEFAULT 0  NOT NULL,
@@ -109,11 +109,11 @@ CREATE TABLE income_outcome(
     total_outcome_tmt  INT        DEFAULT 0,
     total_outcome_usd  INT        DEFAULT 0
 
-)
+);
 
 ------Insertions--------
 
-INSERT INTO stores(name, parent_store_id) values("Total store", -1)
+INSERT INTO stores(name, parent_store_id) values('Total store', -1);
 
 
 

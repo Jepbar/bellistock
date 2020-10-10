@@ -76,7 +76,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 				os.Exit(100)
 			}
 		} else {
-			err = responses.ErrUnauthorized
+			err = responses.ErrConflict
 			responses.SendResponse(w, err, nil, nil)
 		}
 	} else {

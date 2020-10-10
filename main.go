@@ -76,6 +76,7 @@ func main() {
 	r.HandleFunc("/api/givedataaboutcustomer", givedataforediting.GiveDataAboutCustomerForediting)
 	r.HandleFunc("/api/givedataaboutcategorie", givedataforediting.GiveDataAboutCategorieForEditing)
 	r.HandleFunc("/api/givedataaboutincometransfer", givedataforediting.GiveDataAboutIncomeTransferForEditing)
+	r.HandleFunc("/api/givedataaboutoutcometransfer", givedataforediting.GiveDataAboutOutcomeTransfer)
 
 	/*----UpdatingData----*/
 
