@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	SqlInsert2               = `insert into money_transfers(store_id, type_of_transfer, type_of_account, currency, categorie, customer ,project, type_of_income_payment, total_payment_amount,user_id, date, keyword) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) returning id`
+	SqlInsert2               = `insert into money_transfers(store_id, type_of_transfer, type_of_account, currency, categorie, customer ,project, type_of_income_payment, total_payment_amount,user_id, date, keyword, money_gone_to) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) returning id`
 	SqlUpdate                = `update stores set jemi_hasap_tmt = jemi_hasap_tmt + $1 , shahsy_hasap_tmt = shahsy_hasap_tmt + $2 where store_id = $3 returning name`
 	SqlUpdate2               = `update stores set jemi_hasap_usd = jemi_hasap_usd + $1 , shahsy_hasap_usd = shahsy_hasap_usd + $2 where store_id = $3 returning name`
 	SqlUpdate3               = `update stores set jemi_hasap_tmt = jemi_hasap_tmt - $1 , shahsy_hasap_tmt = shahsy_hasap_tmt - $2 where shahsy_hasap_tmt >= $2 and store_id = $3 returning name`
@@ -96,6 +96,7 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 	typeOfIncomePayment := r.FormValue("type_of_income_payment")
 	totalPaymentAmount := r.FormValue("total_payment_amount")
 	keyword := r.FormValue("keyword")
+	MoneyGoneTo := r.FormValue("money_gone_to")
 	date := r.FormValue("date")
 
 	intTotalPaymentAmount, _ := strconv.Atoi(totalPaymentAmount)
@@ -289,7 +290,7 @@ func StoreHasap(w http.ResponseWriter, r *http.Request) {
 	if ok == true || nok == true {
 		id := 0
 		err = conn.QueryRow(context.Background(), SqlInsert2, intStoreid, typeOfTransfer, typeOfAccount, currency, categorie,
-			customer, project, typeOfIncomePayment, intTotalPaymentAmount, ID, time1, keyword).Scan(&id)
+			customer, project, typeOfIncomePayment, intTotalPaymentAmount, ID, time1, keyword, MoneyGoneTo).Scan(&id)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
 			os.Exit(100)

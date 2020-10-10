@@ -30,6 +30,12 @@ const (
 	sqlSelectCategories            = `select categorie_id, name, parent_categorie from categories where is_it_deleted = 'False'`
 	sqlSelectTotalIncome           = `select total_income_tmt , total_income_usd from income_outcome where id = 1`
 	sqlSelectTotalOutcome          = `select total_outcome_tmt , total_outcome_usd from income_outcome where id = 1`
+	sqlCountWorkers                = `select count(*) from workers where is_it_deleted = 'False'`
+	sqlCountActions                = `select count(*) from last_modifications`
+	sqlCountMoneyTransfer          = `select count(*) from  money_transfers`
+	sqlCountIncomes                = `select count(*) from money_transfers where type_of_transfer = 'girdi'`
+	sqlCountOutcomes               = `select count(*) from money_transfers where type_of_transfer = 'cykdy'`
+	sqlCountTransfersBetweenStores = `select count(*) from transfers_between_stores`
 )
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
@@ -206,6 +212,11 @@ func GetLastActions(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 	defer conn.Close(context.Background())
+	var NumberOfActions int
+	err1 := conn.QueryRow(context.Background(), sqlCountActions).Scan(&NumberOfActions)
+	if err1 != nil {
+		fmt.Println(err1)
+	}
 
 	rows, err := conn.Query(context.Background(), sqlSelectLastActions, intLimit, intOffset)
 
@@ -251,7 +262,11 @@ func GetLastActions(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	item := ListofActions
+	allactions := &responses.AllActions{}
+	allactions.NumberOfActions = NumberOfActions
+	allactions.List = ListofActions
+
+	item := allactions
 
 	responses.SendResponse(w, err, item, nil)
 }
@@ -351,6 +366,12 @@ func GetTransferBetweenStores(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
+	var NumberOfTransfers int
+	err1 := conn.QueryRow(context.Background(), sqlCountTransfersBetweenStores).Scan(&NumberOfTransfers)
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+
 	rows, err := conn.Query(context.Background(), sqlSelectTransferBetweenStores, intLimit, intOffset)
 
 	defer rows.Close()
@@ -372,7 +393,12 @@ func GetTransferBetweenStores(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	item := List
+	allTransfersBetweenStores := &responses.AlltransfersBetweenStores{}
+
+	allTransfersBetweenStores.NumberOfTransfers = NumberOfTransfers
+	allTransfersBetweenStores.List = List
+
+	item := allTransfersBetweenStores
 
 	responses.SendResponse(w, err, item, nil)
 
@@ -398,6 +424,13 @@ func GetWorkers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(context.Background())
 
+	var NumberOfWorkers int
+	err1 := conn.QueryRow(context.Background(), sqlCountWorkers).Scan(&NumberOfWorkers)
+	if err1 != nil {
+		fmt.Println(err1)
+		fmt.Println(NumberOfWorkers)
+	}
+
 	rows, err := conn.Query(context.Background(), sqlSelectWorkers, intLimit, intOffset)
 
 	defer rows.Close()
@@ -414,8 +447,12 @@ func GetWorkers(w http.ResponseWriter, r *http.Request) {
 		List = append(List, worker)
 
 	}
+	allWorkers := &responses.AllWorkers{}
 
-	item := List
+	allWorkers.NumberOfWorkers = NumberOfWorkers
+	allWorkers.List = List
+
+	item := allWorkers
 
 	responses.SendResponse(w, err, item, nil)
 }
@@ -440,6 +477,11 @@ func GetMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 	defer conn.Close(context.Background())
+	var NumberOfTransfers int
+	err1 := conn.QueryRow(context.Background(), sqlCountMoneyTransfer).Scan(&NumberOfTransfers)
+	if err1 != nil {
+		fmt.Println(err1)
+	}
 
 	rows, err := conn.Query(context.Background(), sqlSelectMoneyTransfers, intLimit, intOffset)
 	defer rows.Close()
@@ -464,7 +506,11 @@ func GetMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	item := List
+	alltransfers := &responses.AllTransfers{}
+	alltransfers.NumberOfTransfers = NumberOfTransfers
+	alltransfers.List = List
+
+	item := alltransfers
 
 	responses.SendResponse(w, err, item, nil)
 
@@ -497,6 +543,12 @@ func GetIncomes(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("erroro")
 	}
 
+	var NumberOfIncomes int
+	err2 := conn.QueryRow(context.Background(), sqlCountIncomes).Scan(&NumberOfIncomes)
+	if err1 != nil {
+		fmt.Println(err2)
+	}
+
 	rows, err := conn.Query(context.Background(), sqlSelectIncomes, intLimit, intOffset)
 	defer rows.Close()
 
@@ -517,17 +569,15 @@ func GetIncomes(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	ListOfTotalIncome := make([]*responses.TotalIncome, 0)
 	total := &responses.TotalIncome{}
 
 	total.TotalIncomeTmt = tmt
 	total.TotalIncomeUsd = usd
+	total.NumberOfIncomes = NumberOfIncomes
 
 	total.List = List
 
-	ListOfTotalIncome = append(ListOfTotalIncome, total)
-
-	item := ListOfTotalIncome
+	item := total
 
 	responses.SendResponse(w, err, item, nil)
 }
@@ -559,6 +609,11 @@ func GetOutcomes(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("erroro")
 	}
 
+	var NumberOutcomes int
+	err2 := conn.QueryRow(context.Background(), sqlCountOutcomes).Scan(&NumberOutcomes)
+	if err2 != nil {
+		fmt.Println(err2)
+	}
 	rows, err := conn.Query(context.Background(), sqlSelectOutcomes, intLimit, intOffset)
 	defer rows.Close()
 
@@ -580,17 +635,15 @@ func GetOutcomes(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	ListOfTotalOutcome := make([]*responses.TotalOutcome, 0)
 	total := &responses.TotalOutcome{}
 
 	total.TotalOutcomeTmt = tmt
 	total.TotalOutcomeUsd = usd
+	total.NumberOfOutcomes = NumberOutcomes
 
 	total.List = List
 
-	ListOfTotalOutcome = append(ListOfTotalOutcome, total)
-
-	item := ListOfTotalOutcome
+	item := total
 
 	responses.SendResponse(w, err, item, nil)
 }

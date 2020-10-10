@@ -29,7 +29,7 @@ func FilterWorkers(w http.ResponseWriter, r *http.Request) {
 	filter.Wezipesi = Wezipesi
 	filter.DependingStore = DependingStore
 
-	sqlFilterWorkers, err := function.GenerateSqlFilterWorkers(filter)
+	sqlFilterWorkers, sqlNumberOfWorkersInFilter, err := function.GenerateSqlFilterWorkers(filter)
 
 	token := function.ExtractToken(r)
 	_, err1 := function.VerifyAccessToken(token)
@@ -45,6 +45,12 @@ func FilterWorkers(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 	defer conn.Close(context.Background())
+
+	var NumberOfWorkers int
+	err2 := conn.QueryRow(context.Background(), sqlNumberOfWorkersInFilter).Scan(&NumberOfWorkers)
+	if err1 != nil {
+		fmt.Println(err2)
+	}
 
 	rows, err := conn.Query(context.Background(), sqlFilterWorkers, intLimit, intOffset)
 	defer rows.Close()
@@ -62,7 +68,12 @@ func FilterWorkers(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	item := List
+	allWorkers := &responses.AllWorkers{}
+
+	allWorkers.NumberOfWorkers = NumberOfWorkers
+	allWorkers.List = List
+
+	item := allWorkers
 
 	responses.SendResponse(w, err, item, nil)
 }
@@ -87,7 +98,7 @@ func FilterMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 	filter.Begin = Begin
 	filter.End = End
 
-	sqlFilterMoneyTransfers, err := function.GenerateSqlFilterMoneyTransfers(filter)
+	sqlFilterMoneyTransfers, sqlNumberOfTransfers, err := function.GenerateSqlFilterMoneyTransfers(filter)
 
 	token := function.ExtractToken(r)
 	_, err1 := function.VerifyAccessToken(token)
@@ -103,6 +114,12 @@ func FilterMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 	defer conn.Close(context.Background())
+	var NumberOfTransfers int
+	err2 := conn.QueryRow(context.Background(), sqlNumberOfTransfers).Scan(&NumberOfTransfers)
+	if err2 != nil {
+		fmt.Println(err2)
+		fmt.Println("HAHAH")
+	}
 
 	rows, err := conn.Query(context.Background(), sqlFilterMoneyTransfers, intLimit, intOffset)
 	defer rows.Close()
@@ -126,9 +143,11 @@ func FilterMoneyTransfers(w http.ResponseWriter, r *http.Request) {
 		List = append(List, moneyTransfer)
 
 	}
+	alltransfers := &responses.AllTransfers{}
+	alltransfers.NumberOfTransfers = NumberOfTransfers
+	alltransfers.List = List
 
-	item := List
-
+	item := alltransfers
 	responses.SendResponse(w, err, item, nil)
 
 }
@@ -157,7 +176,7 @@ func FilterIncomes(w http.ResponseWriter, r *http.Request) {
 	filter.Begin = Begin
 	filter.End = End
 
-	sqlFilterIncome, err := function.GenerateSqlFilterIncomes(filter)
+	sqlFilterIncome, sqlNumberOfIncomes, err := function.GenerateSqlFilterIncomes(filter)
 
 	token := function.ExtractToken(r)
 	_, err1 := function.VerifyAccessToken(token)
@@ -172,7 +191,13 @@ func FilterIncomes(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
+
 	defer conn.Close(context.Background())
+	var NumberOfIncomes int
+	err2 := conn.QueryRow(context.Background(), sqlNumberOfIncomes).Scan(&NumberOfIncomes)
+	if err2 != nil {
+		fmt.Println(err2)
+	}
 
 	rows, err := conn.Query(context.Background(), sqlFilterIncome, intLimit, intOffset)
 	defer rows.Close()
@@ -193,8 +218,15 @@ func FilterIncomes(w http.ResponseWriter, r *http.Request) {
 		List = append(List, income)
 
 	}
+	total := &responses.TotalIncome{}
 
-	item := List
+	total.TotalIncomeTmt = 0
+	total.TotalIncomeUsd = 0
+	total.NumberOfIncomes = NumberOfIncomes
+
+	total.List = List
+
+	item := total
 
 	responses.SendResponse(w, err, item, nil)
 
@@ -222,7 +254,7 @@ func FilterOutcomes(w http.ResponseWriter, r *http.Request) {
 	filter.Begin = Begin
 	filter.End = End
 
-	sqlFilterOutcome, err := function.GenerateSqlFilterOutcomes(filter)
+	sqlFilterOutcome, sqlNumberOfOutcomes, err := function.GenerateSqlFilterOutcomes(filter)
 
 	token := function.ExtractToken(r)
 	_, err1 := function.VerifyAccessToken(token)
@@ -238,6 +270,12 @@ func FilterOutcomes(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 	defer conn.Close(context.Background())
+
+	var NumberOfOutcomes int
+	err2 := conn.QueryRow(context.Background(), sqlNumberOfOutcomes).Scan(&NumberOfOutcomes)
+	if err2 != nil {
+		fmt.Println(err2)
+	}
 
 	rows, err := conn.Query(context.Background(), sqlFilterOutcome, intLimit, intOffset)
 	defer rows.Close()
@@ -260,7 +298,15 @@ func FilterOutcomes(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	item := List
+	total := &responses.TotalOutcome{}
+
+	total.TotalOutcomeTmt = 0
+	total.TotalOutcomeUsd = 0
+	total.NumberOfOutcomes = NumberOfOutcomes
+
+	total.List = List
+
+	item := total
 
 	responses.SendResponse(w, err, item, nil)
 
@@ -285,7 +331,7 @@ func FilterBetweenStores(w http.ResponseWriter, r *http.Request) {
 	filter.Begin = Begin
 	filter.End = End
 
-	sqlFilterBetweenStores, err := function.GenerateSqlFilterTransferBetweenStores(filter)
+	sqlFilterBetweenStores, sqlNumberOfTransfers, err := function.GenerateSqlFilterTransferBetweenStores(filter)
 
 	token := function.ExtractToken(r)
 	_, err1 := function.VerifyAccessToken(token)
@@ -301,6 +347,11 @@ func FilterBetweenStores(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 	defer conn.Close(context.Background())
+	var NumberOfTransfers int
+	err2 := conn.QueryRow(context.Background(), sqlNumberOfTransfers).Scan(&NumberOfTransfers)
+	if err2 != nil {
+		fmt.Println(err2)
+	}
 
 	rows, err := conn.Query(context.Background(), sqlFilterBetweenStores, intLimit, intOffset)
 
@@ -323,7 +374,12 @@ func FilterBetweenStores(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	item := List
+	allTransfersBetweenStores := &responses.AlltransfersBetweenStores{}
+
+	allTransfersBetweenStores.NumberOfTransfers = NumberOfTransfers
+	allTransfersBetweenStores.List = List
+
+	item := allTransfersBetweenStores
 
 	responses.SendResponse(w, err, item, nil)
 

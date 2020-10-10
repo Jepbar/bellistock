@@ -76,6 +76,11 @@ type Stores1 struct {
 	Childs     []*Stores `json:"childs"`
 }
 
+type AllActions struct {
+	NumberOfActions int            `json:"number_of_actions"`
+	List            []*LastActions `json:"list"`
+}
+
 type LastActions struct {
 	Id         int    `json:"id"`
 	User       string `json:"done_by"`
@@ -88,6 +93,11 @@ type LastActions struct {
 type UserLogin struct {
 	AccessToken string `json:"access_token"`
 	Role        string `json:"role"`
+}
+
+type AllWorkers struct {
+	NumberOfWorkers int        `json:"number_of_workers"`
+	List            []*Workers `json:"list"`
 }
 
 type Workers struct {
@@ -121,6 +131,11 @@ type BetweenStores struct {
 	Date               string `json:"date"`
 }
 
+type AlltransfersBetweenStores struct {
+	NumberOfTransfers int              `json:"number_of_transfers"`
+	List              []*BetweenStores `json:"list"`
+}
+
 type MoneyTransfer struct {
 	Id                 int    `json:"id"`
 	Store              string `json:"store"`
@@ -131,6 +146,11 @@ type MoneyTransfer struct {
 	Currency           string `json:"currency"`
 	Categorie          string `json:"categorie"`
 	Date               string `json:"date"`
+}
+
+type AllTransfers struct {
+	NumberOfTransfers int              `json:"number_of_transfers"`
+	List              []*MoneyTransfer `json:"list"`
 }
 
 type Incomes struct {
@@ -161,15 +181,17 @@ type IncomeDataForEditing struct {
 }
 
 type TotalIncome struct {
-	TotalIncomeTmt int        `json:"total_income_tmt"`
-	TotalIncomeUsd int        `json:"total_income_usd"`
-	List           []*Incomes `json:"list"`
+	TotalIncomeTmt  int        `json:"total_income_tmt"`
+	TotalIncomeUsd  int        `json:"total_income_usd"`
+	NumberOfIncomes int        `json:"number_of_incomes"`
+	List            []*Incomes `json:"list"`
 }
 
 type TotalOutcome struct {
-	TotalOutcomeTmt int         `json:"total_outcome_tmt"`
-	TotalOutcomeUsd int         `json:"total_outcome_usd"`
-	List            []*Outcomes `json:"list"`
+	TotalOutcomeTmt  int         `json:"total_outcome_tmt"`
+	TotalOutcomeUsd  int         `json:"total_outcome_usd"`
+	NumberOfOutcomes int         `json:"number_of_outcomes"`
+	List             []*Outcomes `json:"list"`
 }
 
 type Outcomes struct {
