@@ -238,10 +238,10 @@ func GetLastActions(w http.ResponseWriter, r *http.Request) {
 		action.Date = dateOfTransfer
 
 		if status == 0 {
-			action.LastStatus = "It has not seen yet"
+			action.LastStatus = "Not seen"
 		}
 		if status == 1 {
-			action.LastStatus = "It has already seen"
+			action.LastStatus = "Seen"
 		}
 
 		conn, err := pgx.Connect(context.Background(), os.Getenv(config.Conf.DbConnect))

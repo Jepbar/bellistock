@@ -86,6 +86,7 @@ func main() {
 	r.HandleFunc("/api/updatecustomer", update.UpdateCustomerData)
 	r.HandleFunc("/api/updatecategorie", update.UpdateCategorieData)
 	r.HandleFunc("/api/updateincometransfer", update.UpdateIncomeTransferData)
+	r.HandleFunc("/api/updateoutcometransfer", update.UpdateOutcomeTransferData)
 
 	http.Handle("/", r)
 	http.ListenAndServe(config.Conf.ListenAndServe, nil)
